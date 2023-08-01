@@ -15,11 +15,17 @@ const routes: Routes = {
     title: 'Welcome',
     icon: HomeIcon,
   },
+  [Pages.ARfiti]: {
+    component: asyncComponentLoader(() => import('@/pages/ARfiti')),
+    path: '/AFiti',
+    title: 'ARfiti',
+    icon: GitHubIcon,
+  },
   [Pages.Page1]: {
     component: asyncComponentLoader(() => import('@/pages/Page1')),
     path: '/page-1',
     title: 'Page 1',
-    icon: GitHubIcon,
+    icon: AddTaskIcon,
   },
   [Pages.Page2]: {
     component: asyncComponentLoader(() => import('@/pages/Page2')),

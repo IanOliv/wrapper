@@ -6,6 +6,7 @@ import type { SvgIconProps } from '@mui/material/SvgIcon';
 enum Pages {
   Welcome,
   Page1,
+  ARfiti,
   Page2,
   Page3,
   Page4,
