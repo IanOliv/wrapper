@@ -45,6 +45,19 @@ const routes: Routes = {
     title: 'Page 4',
     icon: BugReportIcon,
   },
+  [Pages.Card]: {
+    component: asyncComponentLoader(() => import('@/pages/Card')),
+    path: '/card',
+    title: 'Card',
+    icon: AddTaskIcon,
+  },
+  [Pages.CardDetail]: {
+    component: asyncComponentLoader(() => import('@/pages/Card')),
+    path: '/card/:id',
+    title: 'Card',
+    icon: AddTaskIcon,
+  },
+
   [Pages.NotFound]: {
     component: asyncComponentLoader(() => import('@/pages/NotFound')),
     path: '*',
