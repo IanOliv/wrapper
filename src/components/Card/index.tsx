@@ -10,7 +10,7 @@ import { useWheelScroll } from '@/utils/use-wheel-scroll';
 
 import { ContentPlaceholder } from './ContentPlaceholder';
 import { Image } from './Image';
-import { Title } from './Title.tsx';
+import { Title } from './Title';
 import { closeSpring, openSpring } from './animations';
 import './styles.css';
 import { CardData } from './types';

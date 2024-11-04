@@ -1,9 +1,9 @@
 import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 
-// import { useLocation, useParams } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 
-// import { Card as CardDetail } from '@/components/Card';
+import { Card as CardDetail } from '@/components/Card';
 import Meta from '@/components/Meta';
 import { FullSizeCenteredFlexBox } from '@/components/styled';
 
@@ -84,7 +84,7 @@ import { FullSizeCenteredFlexBox } from '@/components/styled';
 
 function Card() {
   // let location = useLocation();
-  // let { id } = useParams();
+  const { id } = useParams();
   const [selectedCard, setSelectedCard] = useState(false);
 
   // selected state
@@ -99,14 +99,7 @@ function Card() {
         </Typography>
         <br />
         <Typography variant="h3">{id}</Typography>
-        {/* <CardDetail
-          
-          isSelected={selectedCard}
-          history={history}
-          {...cardData[0]}
-         
-         
-         />  */}
+        <CardDetail isSelected={selectedCard} history={history} {...cardData[0]} />
 
         {/* {cardData.map((card) =>{
           // return <h1>card</h1>
