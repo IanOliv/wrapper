@@ -1,8 +1,13 @@
 import * as React from 'react';
 
-import { motion, useDeprecatedInvertedScale as useInvertedScale } from 'framer-motion';
+
+
+import { motion, useDeprecatedInvertedScale as useInvertedScale, useMotionValue } from 'framer-motion';
+
+
 
 import { closeSpring, openSpring } from './animations';
+
 
 interface TitleProps {
   title: string;
@@ -11,7 +16,10 @@ interface TitleProps {
 }
 
 export const Title: React.FC<TitleProps> = ({ title, category, isSelected }) => {
-  const inverted = useInvertedScale();
+  // const inverted = useInvertedScale();
+  const scaleX = useMotionValue(1);
+  const scaleY = useMotionValue(1);
+
   const x = isSelected ? 30 : 15;
   const y = x;
 
@@ -22,7 +30,7 @@ export const Title: React.FC<TitleProps> = ({ title, category, isSelected }) => 
       animate={{ x, y }}
       transition={isSelected ? openSpring : closeSpring}
       transformTemplate={scaleTranslate}
-      style={{ ...inverted, originX: 0, originY: 0 }}
+      style={{ scaleY,scaleX, originX: 0, originY: 0 }}
     >
       <span className="category">{category}</span>
       <h2>{title}</h2>

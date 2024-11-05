@@ -95,8 +95,11 @@ li {
 }
 
 .open .card-content {
+  margin-top: 4%;
+  max-height: 96%;
   height: auto;
-  max-width: 700px;
+  max-width:96%;
+  /* width: 900px; */
   overflow: hidden;
 }
 
@@ -114,7 +117,7 @@ li {
   left: 0;
   overflow: hidden;
   height: 420px;
-  width: 100vw;
+  width:100%;
   transform: translateZ(0);
 }
 
@@ -146,7 +149,7 @@ h2 {
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  max-width: 990px;
+  
 }
 
 .overlay a {

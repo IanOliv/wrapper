@@ -1,4 +1,4 @@
-import * as React from 'react';
+/* eslint-disable react/prop-types */
 import { memo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -8,11 +8,11 @@ import { useInvertedBorderRadius } from '@/utils/use-inverted-border-radius';
 import { useScrollConstraints } from '@/utils/use-scroll-constraints';
 import { useWheelScroll } from '@/utils/use-wheel-scroll';
 
+import './styles.css';
 import { ContentPlaceholder } from './ContentPlaceholder';
 import { Image } from './Image';
 import { Title } from './Title';
 import { closeSpring, openSpring } from './animations';
-import './styles.css';
 import { CardData } from './types';
 
 interface Props extends CardData {
@@ -59,7 +59,7 @@ const CardComponent = ({
 
   // When this card is selected, attach a wheel event listener
   const containerRef = useRef(null);
-  useWheelScroll(containerRef, y, constraints, checkSwipeToDismiss, isSelected);
+  // useWheelScroll(containerRef, y, constraints, checkSwipeToDismiss, isSelected);
 
   return (
     <li ref={containerRef} className={`card`}>
@@ -74,7 +74,11 @@ const CardComponent = ({
           drag={isSelected ? 'y' : false}
           dragConstraints={constraints}
           onDrag={checkSwipeToDismiss}
-          onUpdate={checkZIndex}
+          // onUpdate={checkZIndex}
+          onUpdate={((latest) => {
+            // console
+            console.log('latest:', latest)
+          })}
         >
           <Image
             id={id}
@@ -86,7 +90,8 @@ const CardComponent = ({
           <ContentPlaceholder />
         </motion.div>
       </div>
-      {!isSelected && <Link to={id} className={`card-open-link`} />}
+      {!isSelected && <Link to={`card/${id}`} className={`card-open-link`} />}
+      {/* {!isSelected && <Link to={id} className={`card-open-link`} />} */}
     </li>
   );
 };
