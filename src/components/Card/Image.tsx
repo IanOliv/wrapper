@@ -1,22 +1,21 @@
 import * as React from 'react';
 
-
-
-import { motion, useDeprecatedInvertedScale as useInvertedScale, useMotionValue } from 'framer-motion';
-
-
+import { motion, useMotionValue } from 'framer-motion';
 
 import { closeSpring } from './animations';
 
-
 interface ImageProps {
-  id: string;
+  // id: string;
   isSelected: boolean;
   pointOfInterest?: number;
   backgroundColor?: string;
 }
 
-export const Image: React.FC<ImageProps> = ({ id, isSelected, pointOfInterest = 0, backgroundColor }) => {
+export const Image: React.FC<ImageProps> = ({
+  isSelected,
+  pointOfInterest = 0,
+  backgroundColor,
+}) => {
   const scaleX = useMotionValue(1);
   const scaleY = useMotionValue(1);
 
@@ -25,7 +24,7 @@ export const Image: React.FC<ImageProps> = ({ id, isSelected, pointOfInterest = 
   return (
     <motion.div
       className="card-image-container"
-      style={{ scaleY,scaleX, backgroundColor, originX: 0, originY: 0 }}
+      style={{ scaleY, scaleX, backgroundColor, originX: 0, originY: 0 }}
     >
       <motion.img
         className="card-image"
