@@ -17,22 +17,15 @@ const deltaThreshold = 5;
 // If wheel event fires beyond constraints, multiple the delta by this amount
 const elasticFactor = 0.2;
 
-function springTo(value: MotionValue, from: number, to: number) {
+function springTo(value: MotionValue<number>, from: number, to: number) {
   if (value.isAnimating()) return;
 
-  value.start((complete) => {
-    const animation = spring({
-      from,
-      to,
-      velocity: value.getVelocity(),
-      stiffness: 400,
-      damping: 40,
-    }).start({
-      update: (v: number) => value.set(v),
-      complete,
-    });
-
-    return () => animation.stop();
+  spring({
+    from,
+    to,
+    velocity: value.getVelocity(),
+    stiffness: 400,
+    damping: 40,
   });
 }
 
@@ -108,5 +101,5 @@ export function useWheelScroll(
     onWheelCallback(event);
   };
 
-  useDomEvent(ref, 'wheel', isActive && onWheel, { passive: false });
+  useDomEvent(ref, 'wheel', isActive ? (onWheel as EventListener) : undefined, { passive: false });
 }

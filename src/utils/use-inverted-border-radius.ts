@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 
 // Revert to using the deprecated name
-import { useDeprecatedInvertedScale as useInvertedScale, useMotionValue, useAnimation } from 'framer-motion';
+import { useAnimation, useMotionValue } from 'framer-motion';
+
 /**
  * Avoid the stretch/squashing of border radius by using inverting them
  * throughout the component's layout transition.
@@ -20,15 +21,14 @@ export function useInvertedBorderRadius(radius: number) {
   const borderRadius = useMotionValue(`${radius}px`);
   const inverted = {
     scaleX: useMotionValue(1 / scaleX.get()),
-    scaleY: useMotionValue(1 / scaleY.get())
+    scaleY: useMotionValue(1 / scaleY.get()),
   };
 
   useEffect(() => {
-    controls.start({ x: scaleX, y: scaleY });
+    controls.start({ x: scaleX.get(), y: scaleY.get() });
   }, [controls, scaleX, scaleY]);
 
   useEffect(() => {
-
     function updateRadius() {
       const latestX = inverted.scaleX.get();
       const latestY = inverted.scaleY.get();
@@ -38,14 +38,14 @@ export function useInvertedBorderRadius(radius: number) {
       borderRadius.set(`${xRadius} ${yRadius}`);
     }
 
-    const unsubscribeX = scaleX.on("change",updateRadius);
-    const unsubscribeY = scaleY.on("change",updateRadius);
+    const unsubscribeX = scaleX.on('change', updateRadius);
+    const unsubscribeY = scaleY.on('change', updateRadius);
 
     return () => {
       unsubscribeX();
       unsubscribeY();
     };
-  }, [radius, scaleX, scaleY, borderRadius]);
+  }, [radius, scaleX, scaleY, borderRadius, inverted.scaleX, inverted.scaleY]);
 
   return borderRadius;
 }

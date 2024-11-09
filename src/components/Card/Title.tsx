@@ -1,13 +1,8 @@
 import * as React from 'react';
 
-
-
-import { motion, useDeprecatedInvertedScale as useInvertedScale, useMotionValue } from 'framer-motion';
-
-
+import { motion, useMotionValue } from 'framer-motion';
 
 import { closeSpring, openSpring } from './animations';
-
 
 interface TitleProps {
   title: string;
@@ -30,7 +25,7 @@ export const Title: React.FC<TitleProps> = ({ title, category, isSelected }) => 
       animate={{ x, y }}
       transition={isSelected ? openSpring : closeSpring}
       transformTemplate={scaleTranslate}
-      style={{ scaleY,scaleX, originX: 0, originY: 0 }}
+      style={{ scaleY, scaleX, originX: 0, originY: 0 }}
     >
       <span className="category">{category}</span>
       <h2>{title}</h2>
@@ -51,5 +46,14 @@ const scaleTranslate = ({ x, y, scaleX, scaleY }: { x: number; y: number; scaleX
  * the scale of the parent component. Because of this we want to translate
  * through scaled coordinate space, and can use the transformTemplate prop to do so.
  */
-const scaleTranslate = ({ x, y, scaleX, scaleY }) =>
-  `scaleX(${scaleX}) scaleY(${scaleY}) translate(${x}, ${y}) translateZ(0)`;
+const scaleTranslate = ({
+  x,
+  y,
+  scaleX,
+  scaleY,
+}: {
+  x: number;
+  y: number;
+  scaleX: number;
+  scaleY: number;
+}) => `scaleX(${scaleX}) scaleY(${scaleY}) translate(${x}, ${y}) translateZ(0)`;

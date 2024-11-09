@@ -8,7 +8,11 @@ interface Constraints {
 /**
  * Calculate the top/bottom scroll constraints of a full-screen element vs the viewport
  */
-export function useScrollConstraints(ref, measureConstraints: boolean) {
+interface RefObject {
+  current: HTMLElement | null;
+}
+
+export function useScrollConstraints(ref: RefObject, measureConstraints: boolean): Constraints {
   const [constraints, setConstraints] = useState<Constraints>({
     top: 0,
     bottom: 0,
@@ -19,8 +23,8 @@ export function useScrollConstraints(ref, measureConstraints: boolean) {
 
     const element = ref.current;
     const viewportHeight = window.innerHeight;
-    const contentTop = element.offsetTop;
-    const contentHeight = element.offsetHeight;
+    const contentTop = element ? element.offsetTop : 0;
+    const contentHeight = element ? element.offsetHeight : 0;
     const scrollableViewport = viewportHeight - contentTop * 2;
     const top = Math.min(scrollableViewport - contentHeight, 0);
 

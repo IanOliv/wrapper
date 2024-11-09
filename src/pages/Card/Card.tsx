@@ -1,13 +1,11 @@
 // import { useState } from 'react';
-import { Route, Router, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
-
+import { AnimatePresence } from 'framer-motion';
 
 // import Typography from '@mui/material/Typography';
 import { Card as CardDetail } from '@/components/Card';
 import Meta from '@/components/Meta';
-import { AnimatePresence } from 'framer-motion';
-
 
 // import { FullSizeCenteredFlexBox } from '@/components/styled';
 
@@ -86,50 +84,27 @@ const cardData: CardData[] = [
   },
 ];
 
-const List = ({ match, history }) => (
-  <ul className="card-list">
-    {cardData.map((card) => (
-      <CardDetail
-        key={card.id}
-        isSelected={match.params.id === card.id}
-        history={history}
-        {...card}
-      />
-    ))}
-  </ul>
-);
-
-const CardLists = () => (
-  <Router location={''} navigator={undefined}>
-    <Route path={['/:id', '/']} component={List} />
-  </Router>
-);
-
 function Card() {
   const { id } = useParams();
   const navigate = useNavigate();
   // const [selectedCard, setSelectedCard] = useState(false);
 
-
   return (
     <>
       <Meta title="Card" />
-      <div id='card-details' style={{ padding: '20px' }}>
+      <div id="card-details" style={{ padding: '20px' }}>
         <ul className="card-list">
           <AnimatePresence>
-
-          {cardData.map((card) => (
-            <CardDetail
-              key={card.id}
-              isSelected={id === card.id}
-              history={navigate}
-
-              // onClick={() => handleCardClick(card.id)}
-              {...card}
-            />
-          ))}
+            {cardData.map((card) => (
+              <CardDetail
+                key={card.id}
+                isSelected={id === card.id}
+                history={navigate}
+                // onClick={() => handleCardClick(card.id)}
+                {...card}
+              />
+            ))}
           </AnimatePresence>
-
         </ul>
       </div>
     </>

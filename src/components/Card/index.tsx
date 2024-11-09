@@ -1,25 +1,21 @@
 /* eslint-disable react/prop-types */
 import { memo, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavigateFunction } from 'react-router-dom';
 
 import { motion, useMotionValue } from 'framer-motion';
 
-import { useInvertedBorderRadius } from '@/utils/use-inverted-border-radius';
 import { useScrollConstraints } from '@/utils/use-scroll-constraints';
-import { useWheelScroll } from '@/utils/use-wheel-scroll';
 
-import './styles.css';
 import { ContentPlaceholder } from './ContentPlaceholder';
 import { Image } from './Image';
 import { Title } from './Title';
 import { closeSpring, openSpring } from './animations';
+import './styles.css';
 import { CardData } from './types';
 
 interface Props extends CardData {
   isSelected: boolean;
-  history: {
-    push: (route: string) => void;
-  };
+  history: NavigateFunction;
 }
 
 // Distance in pixels a user has to scroll a card down before we recognise
@@ -36,26 +32,26 @@ const CardComponent = ({
   backgroundColor,
 }: Props) => {
   const y = useMotionValue(0);
-  const zIndex = useMotionValue(isSelected ? 2 : 0);
+  // const zIndex = useMotionValue(isSelected ? 2 : 0);
 
   // Maintain the visual border radius when we perform the layoutTransition by inverting its scaleX/Y
-  const inverted = useInvertedBorderRadius(20);
+  // const inverted = useInvertedBorderRadius(20);
 
   // We'll use the opened card element to calculate the scroll constraints
   const cardRef = useRef(null);
   const constraints = useScrollConstraints(cardRef, isSelected);
 
   function checkSwipeToDismiss() {
-    y.get() > dismissDistance && history.push('/');
+    y.get() > dismissDistance && history('/');
   }
 
-  function checkZIndex(latest) {
-    if (isSelected) {
-      zIndex.set(2);
-    } else if (!isSelected && latest.scaleX < 1.01) {
-      zIndex.set(0);
-    }
-  }
+  // function checkZIndex(latest: { scaleX: number }) {
+  //   if (isSelected) {
+  //     zIndex.set(2);
+  //   } else if (!isSelected && latest.scaleX < 1.01) {
+  //     zIndex.set(0);
+  //   }
+  // }
 
   // When this card is selected, attach a wheel event listener
   const containerRef = useRef(null);
@@ -68,20 +64,19 @@ const CardComponent = ({
         <motion.div
           ref={cardRef}
           className="card-content"
-          style={{ ...inverted, zIndex, y }}
+          // style={{ ...inverted, zIndex, y }}
           layout
           transition={isSelected ? openSpring : closeSpring}
           drag={isSelected ? 'y' : false}
           dragConstraints={constraints}
           onDrag={checkSwipeToDismiss}
           // onUpdate={checkZIndex}
-          onUpdate={((latest) => {
+          onUpdate={(latest) => {
             // console
-            console.log('latest:', latest)
-          })}
+            console.log('latest:', latest);
+          }}
         >
           <Image
-            id={id}
             isSelected={isSelected}
             pointOfInterest={pointOfInterest}
             backgroundColor={backgroundColor}
