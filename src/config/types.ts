@@ -1,4 +1,4 @@
-import type { SnackbarProps } from 'notistack';
+import type { OptionsObject as SnackbarProps } from 'notistack';
 
 type Notifications = {
   options: SnackbarProps;

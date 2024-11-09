@@ -1,7 +1,7 @@
 {
-  "name": "React PWA",
-  "short_name": "reactpwa",
-  "description": "Starter kit for modern web applications",
+  "name": "Wrapper",
+  "short_name": "wrpp",
+  "description": "A Wrapper pwa for modern web components",
   "theme_color": "#ffffff",
   "icons": [
     {
