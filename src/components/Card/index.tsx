@@ -2,16 +2,40 @@
 import { memo, useRef } from 'react';
 import { Link, NavigateFunction } from 'react-router-dom';
 
+// import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded';
+// import Button from '@mui/material/Button';
+// import MuiCard from '@mui/material/Card';
+// import CardContent from '@mui/material/CardContent';
+// import Typography from '@mui/material/Typography';
 import { motion, useMotionValue } from 'framer-motion';
 
 import { useScrollConstraints } from '@/utils/use-scroll-constraints';
 
 import { ContentPlaceholder } from './ContentPlaceholder';
-import { Image } from './Image';
+// import { Image } from './Image';
 import { Title } from './Title';
 import { closeSpring, openSpring } from './animations';
 import './styles.css';
 import { CardData } from './types';
+
+// function CardAlert() {
+//   return (
+//     <MuiCard variant="outlined" sx={{ m: 1.5, p: 1.5 }}>
+//       <CardContent>
+//         <AutoAwesomeRoundedIcon fontSize="small" />
+//         <Typography gutterBottom sx={{ fontWeight: 600 }}>
+//           Plan about to expire
+//         </Typography>
+//         <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
+//           Enjoy 10% off when renewing your plan today.
+//         </Typography>
+//         <Button variant="contained" size="small" fullWidth>
+//           Get the discount
+//         </Button>
+//       </CardContent>
+//     </MuiCard>
+//   );
+// }
 
 interface Props extends CardData {
   isSelected: boolean;
@@ -22,22 +46,9 @@ interface Props extends CardData {
 // a swipe-to dismiss action.
 const dismissDistance = 150;
 
-const CardComponent = ({
-  isSelected,
-  id,
-  title,
-  category,
-  history,
-  pointOfInterest,
-  backgroundColor,
-}: Props) => {
+const CardComponent = ({ isSelected, id, title, category, history }: Props) => {
   const y = useMotionValue(0);
-  // const zIndex = useMotionValue(isSelected ? 2 : 0);
 
-  // Maintain the visual border radius when we perform the layoutTransition by inverting its scaleX/Y
-  // const inverted = useInvertedBorderRadius(20);
-
-  // We'll use the opened card element to calculate the scroll constraints
   const cardRef = useRef(null);
   const constraints = useScrollConstraints(cardRef, isSelected);
 
@@ -45,17 +56,7 @@ const CardComponent = ({
     y.get() > dismissDistance && history('/');
   }
 
-  // function checkZIndex(latest: { scaleX: number }) {
-  //   if (isSelected) {
-  //     zIndex.set(2);
-  //   } else if (!isSelected && latest.scaleX < 1.01) {
-  //     zIndex.set(0);
-  //   }
-  // }
-
-  // When this card is selected, attach a wheel event listener
   const containerRef = useRef(null);
-  // useWheelScroll(containerRef, y, constraints, checkSwipeToDismiss, isSelected);
 
   return (
     <li ref={containerRef} className={`card`}>
@@ -76,11 +77,12 @@ const CardComponent = ({
             console.log('latest:', latest);
           }}
         >
-          <Image
+          {/* <Image
             isSelected={isSelected}
             pointOfInterest={pointOfInterest}
             backgroundColor={backgroundColor}
-          />
+          /> */}
+          {/* <TooltipMenu /> */}
           <Title title={title} category={category} isSelected={isSelected} />
           <ContentPlaceholder />
         </motion.div>
