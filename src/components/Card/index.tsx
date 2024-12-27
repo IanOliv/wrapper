@@ -77,14 +77,8 @@ const CardComponent = ({ isSelected, id, title, category, history }: Props) => {
             console.log('latest:', latest);
           }}
         >
-          {/* <Image
-            isSelected={isSelected}
-            pointOfInterest={pointOfInterest}
-            backgroundColor={backgroundColor}
-          /> */}
-          {/* <TooltipMenu /> */}
           <Title title={title} category={category} isSelected={isSelected} />
-          <ContentPlaceholder />
+          <ContentPlaceholder isSelected={isSelected} />
         </motion.div>
       </div>
       {!isSelected && <Link to={`card/${id}`} className={`card-open-link`} />}
