@@ -6,7 +6,7 @@ import { Base } from '@/components/Base';
 
 interface ContentPlaceholderProps {
   isSelected: boolean;
-  isFull: boolean;
+  isFull?: boolean;
 }
 
 const ContentPlaceholderComponent = ({ isSelected }: ContentPlaceholderProps) => {
