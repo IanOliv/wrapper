@@ -3,6 +3,10 @@ import { deepmerge } from '@mui/utils';
 
 import { Themes } from './types';
 
+// let colors =["#53dc8f"]
+
+// const main ='#3f51b5'
+
 const sharedTheme = {
   palette: {
     background: {
