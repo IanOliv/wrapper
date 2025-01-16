@@ -2,7 +2,8 @@ import * as React from 'react';
 
 import { motion, useMotionValue } from 'framer-motion';
 
-import { Base } from '@/components/Base';
+// import { Base } from '@/components/Base';
+import { BeerPong } from '@/components/BeerPong';
 
 interface ContentPlaceholderProps {
   isSelected: boolean;
@@ -21,7 +22,8 @@ const ContentPlaceholderComponent = ({ isSelected }: ContentPlaceholderProps) =>
       className={isSelected ? 'content-container-open' : 'content-container'}
       style={{ scaleY, scaleX, originY: 0, originX: 0 }}
     >
-      <Base />
+      {/* <Base /> */}
+      <BeerPong />
     </motion.div>
   );
 };
