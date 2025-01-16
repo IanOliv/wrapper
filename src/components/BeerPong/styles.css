@@ -1,0 +1,67 @@
+.beer-pong-component {
+  background-color: #ff0000;
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 8px;
+  width: 100%;
+  color: white;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.beer-pong-component > * {
+  margin: 5px;
+}
+
+.beer-pong-button {
+  background-color: #0000ff;
+  color: white;
+  border: 1px solid #ccc;
+  padding: 10px 40px;
+  border-radius: 1em;
+  cursor: pointer;
+  width: 80%;
+}
+
+/* team form */
+
+.beer-pong-input {
+  position: relative;
+  border: 2px solid transparent;
+  width: 80%;
+  height: 2.5em;
+  padding-left: 0.8em;
+  outline: none;
+  overflow: hidden;
+  background-color: #f3f3f3;
+  border-radius: 10px;
+  transition: all 0.5s;
+}
+
+/* beerPongItem */
+
+.beer-pong-item-container {
+  width: 80%;
+  display: flex;
+  flex-direction: row;
+  gap: 3vw;
+  align-items: flex-start;
+  border-bottom: 2px solid black;
+  margin-bottom: 3vw;
+}
+
+.beer-pong-item {
+  width: 5%;
+  height: 3vh;
+  align-items: center;
+}
+
+.beer-pong-item-icon {
+  width: 4vw;
+  height: 2vh;
+  background-color: #0000ff;
+  border-radius: 15%;
+}
