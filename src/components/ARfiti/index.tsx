@@ -30,14 +30,39 @@ function BaseRoundButton() {
 }
 
 function BaseMap() {
+  const [squareCssList, setSquareCssList] = useState(['base-square']);
+  const [mapCssList, setMapCssList] = useState(['base-map']);
+  const [isSelected, setSelection] = useState(false);
+  const handleOnClick = () => {
+    if (isSelected) {
+      // setCssList(cssList.filter((item) => item !== 'clicked'));
+      setSquareCssList(['base-square-expanded']);
+      setMapCssList(['base-map-expanded']);
+    } else {
+      // setCssList([...cssList, 'clicked'])
+      setSquareCssList(['base-square']);
+      setMapCssList(['base-map']);
+    }
+    setSelection(!isSelected);
+  };
+
   return (
-    <div className="base-square">
+    <div className={squareCssList.join(' ')} onClick={handleOnClick}>
       {/* <BaseSquare> */}
       <BaseRoundButton />
-      <div className="base-map">
+      <div className={mapCssList.join(' ')}>
         <h1>Base map </h1>
       </div>
+      {!isSelected && <MapDetails />}
       {/* </BaseSquare> */}
+    </div>
+  );
+}
+
+function MapDetails() {
+  return (
+    <div className="map-details">
+      <h1>Map Details</h1>
     </div>
   );
 }
