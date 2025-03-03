@@ -69,7 +69,6 @@
 
 .base-list-component {
   background-color: #d9d9d9;
-  /* border: 1px solid #ccc; */
   padding: 20px;
   border-radius: 8px;
   width: 100%;
@@ -77,6 +76,14 @@
   height: 100%;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.clicked {
+  background-color: #808080;
 }
 
 .base-list-component:hover {
