@@ -1,11 +1,20 @@
 /* eslint-disable react/prop-types */
 import { TeamForm } from './TeamForm';
+// import { MatchForm } from './MatchForm';
+// import { ChampionshipForm } from './ChampionshipForm';
 import './styles.css';
 
+type BeerPongView = 'teams' | 'championships' | 'games' | 'match';
+
 export function BeerPong() {
+  const view: BeerPongView = 'teams';
+
   return (
     <div className="beer-pong-component">
-      <TeamForm />
+      {view === 'teams' && <TeamForm />}
+      {/* {view === 'championships' && <ChampionshipForm />}
+      {view === 'games' && <MatchForm />}
+      {view === 'match' && <MatchForm />} */}
     </div>
   );
 }
