@@ -77,6 +77,7 @@
   position: absolute; /* Add this */
   bottom: 20px; /* Add this */
   right: 20px; /* Add this */
+  z-index: 100; /* Add this */
 }
 
 .base-round-button:hover {
@@ -115,4 +116,44 @@
 
 .map-details {
   display: block;
+}
+
+.map-modal {
+  background-color: hsl(0, 0%, 93%);
+  border: 20px solid hsl(62, 81%, 51%);
+  padding: 20px;
+  margin: auto auto;
+  /* margin: 0px 0px 10px 0px; */
+  border-radius: 8px;
+  width: 90%;
+  color: white;
+  height: 70%;
+  position: relative;
+  /* Add this */
+}
+
+.map-button {
+  background-color: #0056b3;
+  padding: 20px;
+  border-radius: 8px;
+  width: 100%;
+  color: white;
+  height: 100%;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  /* Add this */
+}
+
+.map-skeleton {
+  background-color: #808080;
+  border: 1px solid #ccc;
+  /* padding: 20px; */
+  border-radius: 8px;
+  width: 99%;
+  margin: auto auto;
+  color: #808080;
+  /* height: 50%; */
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  /* Add this */
 }

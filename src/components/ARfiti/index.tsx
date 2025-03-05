@@ -33,17 +33,20 @@ function BaseMap() {
   const [squareCssList, setSquareCssList] = useState(['base-square']);
   const [mapCssList, setMapCssList] = useState(['base-map']);
   const [isSelected, setSelection] = useState(false);
+  const [isModalOpen] = useState(true);
+
   const handleOnClick = () => {
-    if (isSelected) {
+    if (!isSelected) {
       // setCssList(cssList.filter((item) => item !== 'clicked'));
       setSquareCssList(['base-square-expanded']);
       setMapCssList(['base-map-expanded']);
+      setSelection(true);
     } else {
       // setCssList([...cssList, 'clicked'])
       setSquareCssList(['base-square']);
       setMapCssList(['base-map']);
+      setSelection(false);
     }
-    setSelection(!isSelected);
   };
 
   return (
@@ -52,8 +55,9 @@ function BaseMap() {
       <BaseRoundButton />
       <div className={mapCssList.join(' ')}>
         <h1>Base map </h1>
+        {isModalOpen && <MapModal />}
       </div>
-      {!isSelected && <MapDetails />}
+      {isSelected && <MapDetails />}
       {/* </BaseSquare> */}
     </div>
   );
@@ -62,10 +66,26 @@ function BaseMap() {
 function MapDetails() {
   return (
     <div className="map-details">
-      <h1>Map Details</h1>
+      <br />
+      <MapButton />
+      <MapInfoSkeleton />
+      <MapInfoSkeleton />
     </div>
   );
 }
+
+function MapButton() {
+  return <button className="map-button">+</button>;
+}
+function MapInfoSkeleton() {
+  return <div className="map-skeleton">+</div>;
+}
+
+function MapModal() {
+  return <div className="map-modal"></div>;
+}
+
+// =-----------
 
 function BaseList() {
   return (
