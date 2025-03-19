@@ -131,6 +131,16 @@
   position: relative;
   /* Add this */
 }
+.modal-webcam {
+  width: 100%;
+  background-color: hsl(62, 81%, 51%);
+  height: 100%;
+  position: absolute;
+  top: 0.01vh;
+  left: -0.01vw;
+  border: 4px solid hsl(62, 81%, 51%);
+  /* Add this */
+}
 
 .map-button {
   background-color: #0056b3;
@@ -141,6 +151,20 @@
   height: 100%;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
+  /* Add this */
+}
+
+.map-second-button {
+  background-color: #e49114;
+  padding: 20px;
+  border-radius: 8px;
+  width: 45%;
+  color: #2b2113;
+  height: 100%;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  margin-right: 0.75rem;
+  margin-left: 0.75rem;
   /* Add this */
 }
 
