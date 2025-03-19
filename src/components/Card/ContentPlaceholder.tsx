@@ -3,7 +3,9 @@ import * as React from 'react';
 import { motion, useMotionValue } from 'framer-motion';
 
 // import { Base } from '@/components/Base';
-import { BeerPong } from '@/components/BeerPong';
+// import { BeerPong } from '@/components/BeerPong';
+// import { Camera } from '@/components/Camera';
+import { ARfiti } from '@/components/ARfiti';
 
 interface ContentPlaceholderProps {
   isSelected: boolean;
@@ -23,7 +25,8 @@ const ContentPlaceholderComponent = ({ isSelected }: ContentPlaceholderProps) =>
       style={{ scaleY, scaleX, originY: 0, originX: 0 }}
     >
       {/* <Base /> */}
-      <BeerPong />
+      {/* <BeerPong /> */}
+      <ARfiti />
     </motion.div>
   );
 };
