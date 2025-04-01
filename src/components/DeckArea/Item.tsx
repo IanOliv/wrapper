@@ -1,47 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { useContext, useRef, useState } from 'react';
+import { useState } from 'react';
 
-import { duration } from '@mui/material';
-
-import { min, values } from 'lodash';
-
+// import { min, values, values } from 'lodash';
 import {
   Area,
   BoxColumn,
   DeckBox,
   DeckCard,
-  DeckCardCustom,
   DeckContainer,
   InputRange,
   InputText,
+  LabelRange,
+  OptionRange,
+  SelectionRange,
+  SpanRange,
 } from './styled';
-
-// const deckCardPosition=[
-//   {left:'11%',top:'1%'},
-//   {left:'9%' ,top:'1%'},
-//   {left:'7%'  ,top:'1%'},
-//   {left:'5%' ,top:'1%'},
-//   {left:'3%' ,top:'1%'},
-//   {left:'1%'  ,top:'1%'},]
-
-// const deckCardPosition=[
-//   {left:'11%',top:'6%'},
-//   {left:'9%' ,top:'5%'},
-//   {left:'7%'  ,top:'4%'},
-//   {left:'5%' ,top:'3%'},
-//   {left:'3%' ,top:'2%'},
-//   {left:'1%'  ,top:'1%'},]
-
-//
-
-// const deckCardPosition = [
-//   { left: '3.5%', top: '6%' },
-//   { left: '3%', top: '5%' },
-//   { left: '2.5%', top: '4%' },
-//   { left: '2%', top: '3%' },
-//   { left: '1.5%', top: '2%' },
-//   { left: '1%', top: '1%' },
-// ];
 
 interface ScalarPosition {
   initial: number;
@@ -101,10 +76,10 @@ const scaleAnimation = {
 };
 
 interface Animation {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [name: string]: any;
 }
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+//
 const renderAnimaitons = (object: any) => {
   const keys = Object.keys(object);
   const values = Object.values(object);
@@ -136,6 +111,10 @@ const calculateTransform = (position: number, count: number) => {
 
 const generateTransform = (rotate: number, translate: number) => {
   return `rotate(${rotate}deg) translate(0, ${translate}px)`;
+};
+
+const generateAnimationCss = (animation: string, duration: number) => {
+  return;
 };
 
 interface InputAtributeProps {
@@ -188,7 +167,45 @@ function InputAtribute(props: InputAtributeProps) {
       <InputText>
         {name}:{value}
       </InputText>
+      <br />
     </span>
+  );
+}
+
+interface SelectionOption {
+  value: string;
+  label: string;
+}
+
+interface SelectionAttributeProps {
+  id?: string;
+  name?: string;
+  hasDefault?: boolean;
+  values: SelectionOption[];
+  onchange: (event: string) => void;
+}
+
+function SelectionAttribute(props: SelectionAttributeProps) {
+  const { id, name, values: valueRaw, onchange, hasDefault } = props;
+  const values = [
+    { value: '', label: 'Please choose an option' },
+    ...valueRaw,
+  ] as unknown as SelectionOption[];
+
+  return (
+    <SpanRange>
+      <LabelRange htmlFor={id}>Choose a {name ?? 'option'}:</LabelRange>
+
+      <SelectionRange name={name} id={id} onChange={(event) => onchange(event.target.value)}>
+        {values
+          ?.filter((item) => (!hasDefault ? true : item.value != ''))
+          .map((item, index) => (
+            <OptionRange key={index} value={item.value}>
+              {item.label}
+            </OptionRange>
+          ))}
+      </SelectionRange>
+    </SpanRange>
   );
 }
 
@@ -200,44 +217,73 @@ function Item() {
 
   const [attributeMatrix, setAttributeMatrix] = useState({
     left: {
-      value: 2,
+      value: 3.2,
       min: 0,
       max: 11,
       step: 0.05,
     } as AttributeDetailsProps,
     top: {
-      value: 1,
+      value: 0,
       min: 0,
       max: 11,
       step: 0.05,
     } as AttributeDetailsProps,
     qnt: {
-      value: 6,
+      value: 9,
       min: 0,
       max: 15,
       step: 1,
     } as AttributeDetailsProps,
     scale: {
+      value: 0.5,
+      min: 0,
+      max: 2,
+      step: 0.1,
+    } as AttributeDetailsProps,
+    duration: {
       value: 1,
       min: 0,
       max: 15,
       step: 1,
     } as AttributeDetailsProps,
-    duration: {
+    positionH: {
       value: 0,
-      min: 0,
-      max: 15,
-      step: 1,
+      min: -5,
+      max: 5,
+      step: 0.5,
+    } as AttributeDetailsProps,
+    positionV: {
+      value: 0,
+      min: -5,
+      max: 5,
+      step: 0.5,
     } as AttributeDetailsProps,
   } as AttributeMatrix);
 
   const {
-    left: { value: left },
-    top: { value: top },
-    qnt: { value: qnt },
-    scale: { value: scale },
-    duration: { value: duration },
+    left: { value: left, min: leftMin, max: leftMax, step: leftStep },
+    top: { value: top, min: topMin, max: topMax, step: topStep },
+    qnt: { value: qnt, min: qntMin, max: qntMax, step: qntStep },
+    scale: { value: scale, min: scaleMin, max: scaleMax, step: scaleStep },
+    duration: { value: duration, min: durationMin, max: durationMax, step: durationStep },
+    positionH: { value: positionH, min: positionHMin, max: positionHMax, step: positionHStep },
+    positionV: { value: positionV, min: positionVMin, max: positionVMax, step: positionVStep },
   } = attributeMatrix;
+
+  const valuesAnimation = [
+    { value: 'breathing', label: 'breathing' },
+  ] as unknown as SelectionOption[];
+
+  const valuesEasingFunction = [
+    { value: 'ease-out', label: 'ease-out' },
+    { value: 'ease-in', label: 'ease-in' },
+    { value: 'ease-in-out', label: 'ease-in-out' },
+    { value: 'linear', label: 'linear' },
+  ] as unknown as SelectionOption[];
+
+  const [animationOption, setAnimationOption] = useState('');
+  const [animationEasingFunction, setAnimationEasingFunction] = useState('');
+  const [animationIterationCount, setAnimationIterationCount] = useState('');
 
   const animation = renderAnimaitons(scaleAnimation);
 
@@ -248,20 +294,14 @@ function Item() {
     // console.log(functionPosition(i, scalarPosition));
     console.log(functionPosition(totalPosition - i, { initial: 1, scalar: 0.5, metric: '%' }));
     dPosition.push({
-      left: functionPosition(totalPosition - i, { initial: 2, scalar: top, metric: '%' }),
-      top: functionPosition(totalPosition - i, { initial: 2, scalar: left, metric: '%' }),
+      left: functionPosition(totalPosition - i, { initial: 2, scalar: left, metric: '%' }),
+      top: functionPosition(totalPosition - i, { initial: 25, scalar: top, metric: '%' }),
     });
   }
 
   return (
     <DeckContainer>
       <Area>
-        {/* {deckCardPosition
-        .map((item,index)=>
-            <DeckCard 
-              key={index} 
-              left={item.left} 
-              top={item.top} />)} */}
         <br />
         <br />
         <br />
@@ -276,16 +316,15 @@ function Item() {
         <br />
         <br />
         <br />
-
         {/* setAttributeMatrix({...attributeMatrix, left: { ...attributeMatrix.left, value: +value } })         */}
         <DeckBox>
           <BoxColumn>
             {/* <span> */}
             <InputAtribute
               name="left"
-              min={0}
-              max={11}
-              step={0.05}
+              min={leftMin}
+              max={leftMax}
+              step={leftStep}
               value={left}
               onchange={(value) =>
                 setAttributeMatrix({
@@ -296,9 +335,9 @@ function Item() {
             />
             <InputAtribute
               name="top"
-              min={0}
-              max={11}
-              step={0.05}
+              min={topMin}
+              max={topMax}
+              step={topStep}
               value={top}
               onchange={(value) =>
                 setAttributeMatrix({
@@ -309,9 +348,9 @@ function Item() {
             />
             <InputAtribute
               name="qnt"
-              min={0}
-              max={15}
-              step={1}
+              min={qntMin}
+              max={qntMax}
+              step={qntStep}
               value={qnt}
               onchange={(value) =>
                 setAttributeMatrix({
@@ -322,9 +361,9 @@ function Item() {
             />
             <InputAtribute
               name="scale"
-              min={0}
-              max={15}
-              step={1}
+              min={scaleMin}
+              max={scaleMax}
+              step={scaleStep}
               value={scale}
               onchange={(value) =>
                 setAttributeMatrix({
@@ -333,57 +372,64 @@ function Item() {
                 })
               }
             />
-          </BoxColumn>
-          <BoxColumn>
             <InputAtribute
-              name="scale"
-              min={0}
-              max={15}
-              step={1}
-              value={scale}
-              onchange={(value) => setScale(+value)}
-            />
-            <InputAtribute
-              name="scale"
-              min={0}
-              max={15}
-              step={1}
-              value={scale}
-              onchange={(value) => setScale(+value)}
-            />
-            <InputAtribute
-              name="scale"
-              min={0}
-              max={15}
-              step={1}
-              value={scale}
-              onchange={(value) => setScale(+value)}
+              name="duration"
+              min={durationMin}
+              max={durationMax}
+              step={durationStep}
+              value={duration}
+              onchange={(value) =>
+                setAttributeMatrix({
+                  ...attributeMatrix,
+                  duration: { ...attributeMatrix.duration, value: +value },
+                })
+              }
             />
           </BoxColumn>
           <BoxColumn>
+            <SelectionAttribute
+              name="animation"
+              onchange={(value) => setAnimationOption(value)}
+              values={valuesAnimation}
+            />
+            <SelectionAttribute
+              name="easing function"
+              onchange={(value) => setAnimationEasingFunction(value)}
+              values={valuesEasingFunction}
+            />
+            {/* <SelectionAttribute
+              name='animation Iteration'
+              onchange={(value) => setAnimationIterationCount(value)}
+              values={animationIterationCount}
+            />             */}
+          </BoxColumn>
+          <BoxColumn>
+            {/* <span> */}
             <InputAtribute
-              name="scale"
-              min={0}
-              max={15}
-              step={1}
-              value={scale}
-              onchange={(value) => setScale(+value)}
+              name="positionH"
+              min={positionHMin}
+              max={positionHMax}
+              step={positionHStep}
+              value={positionH}
+              onchange={(value) =>
+                setAttributeMatrix({
+                  ...attributeMatrix,
+                  positionH: { ...attributeMatrix.positionH, value: +value },
+                })
+              }
             />
             <InputAtribute
-              name="scale"
-              min={0}
-              max={15}
-              step={1}
-              value={scale}
-              onchange={(value) => setScale(+value)}
-            />
-            <InputAtribute
-              name="scale"
-              min={0}
-              max={15}
-              step={1}
-              value={scale}
-              onchange={(value) => setScale(+value)}
+              name="positionV"
+              min={positionVMin}
+              max={positionVMax}
+              step={positionVStep}
+              value={positionV}
+              onchange={(value) =>
+                setAttributeMatrix({
+                  ...attributeMatrix,
+                  positionV: { ...attributeMatrix.positionV, value: +value },
+                })
+              }
             />
           </BoxColumn>
         </DeckBox>
@@ -393,11 +439,15 @@ function Item() {
             key={index}
             left={item.left}
             top={item.top}
-            duration={scale}
-            transform={generateTransform(
-              calculateTransform(index, qnt).rotate,
-              calculateTransform(index, qnt).translate,
-            )}
+            duration={duration}
+            scale={scale}
+            animation={animationOption}
+            animationEasingFunction={animationEasingFunction}
+            // animation={animationOption}
+            // transform={generateTransform(
+            //   calculateTransform(index, qnt).rotate,
+            //   calculateTransform(index, qnt).translate,
+            // )}
             // transform='rotate(15deg) translate(0, 1px)'
             keyframes={animation}
           />

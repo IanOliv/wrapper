@@ -18,11 +18,11 @@ interface DeckCardProps {
   transition?: string;
   animation?: string;
   animationName?: string;
-  animationDuration: string | '0';
-  animationEasingFunction?: string;
-  animationFillMode: string | 'normal';
-  animationPlayState: string | 'running';
-  animationIterationCount: string | 'infinite';
+  animationDuration?: string | '0';
+  animationEasingFunction?: string | 'ease-out' | 'ease-in' | 'ease-in-out' | 'linear';
+  animationFillMode?: string | 'normal';
+  animationPlayState?: string | 'running';
+  animationIterationCount?: string | 'infinite';
 }
 
 const DeckContainer = styled('div')(() => ({
@@ -76,6 +76,7 @@ const DeckCard = styled('div')<DeckCardProps>(
     top,
     isShadowEnabled,
     duration,
+    scale,
     keyframes,
     transform,
     animation,
@@ -84,6 +85,7 @@ const DeckCard = styled('div')<DeckCardProps>(
     animationIterationCount,
   }) => ({
     position: 'absolute',
+    scale: scale ?? 1,
     height: '15.5em',
     width: '10em',
     left: left,
@@ -104,83 +106,24 @@ const DeckCard = styled('div')<DeckCardProps>(
     border: '1vmin solid #D9D9D9',
     borderRadius: 17,
     transform,
-    animation: `${animation} ${duration}s ${animationEasingFunction ?? 'ease-out'} ${
-      animationIterationCount ?? 'infinite'
-    } ${animationFillMode ?? 'normal'}`,
+    // animation: `${animation} ${duration}s ${animationEasingFunction ?? 'ease-out'} ${
+    //   animationIterationCount ?? 'infinite'
+    // } ${animationFillMode ?? 'normal'}`,
     '@keyframes breathing': keyframes,
+
+    '@keyframes hover': keyframes,
+
+    '&:hover': {
+      backgroundColor: '#0056b3',
+      animation: `${animation} ${duration}s ${animationEasingFunction ?? 'ease-out'} ${
+        animationIterationCount ?? 'infinite'
+      } ${animationFillMode ?? 'normal'}`,
+    },
+
     // animation: `${animation} ${duration}s ease-out infinite normal`,
     // '@keyframes breathing': keyframes,
   }),
 );
-
-const DeckCardCustom = styled('div')({
-  position: 'absolute',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'space-evenly',
-  width: '50vmin',
-  border: '1vmin solid #fff',
-  aspectRatio: '200/280',
-  borderRadius: '3vmin',
-  // boxShadow: '0 0 0 0.2vmin black, -2vmin 4vmin 1vmin 0 rgba(0, 0, 0, 0.2)',
-  // boxShadow: '',
-  backgroundImage: `linear-gradient(135deg, rgb(0, 0, 0) 25%, transparent 25%),
-    linear-gradient(225deg, rgb(0, 0, 0) 25%, transparent 25%),
-    linear-gradient(45deg, rgb(0, 0, 0) 25%, transparent 25%),
-    linear-gradient(315deg, rgb(0, 0, 0) 25%, transparent 25%)`,
-  backgroundPosition: '10px 0px, 10px 0px, 0px 0px, 0px 0px',
-  backgroundSize: '20px 20px',
-  backgroundRepeat: 'repeat',
-  backgroundColor: '#1b1b1b',
-  transition: 'transform 0.2s',
-  animation: 'breathing 5s ease-out infinite normal',
-
-  '&::before, &::after': {
-    position: 'absolute',
-    fontFamily: 'Sancreek',
-    letterSpacing: '-0.4em',
-    fontSize: '4.5vmin',
-    writingMode: 'vertical-lr',
-    textOrientation: 'upright',
-    color: '#fff',
-  },
-
-  '&::before': {
-    content: '"CODEPEN"',
-    top: '3%',
-    left: '1%',
-  },
-
-  '&::after': {
-    content: '"JOKER"',
-    bottom: '3%',
-    right: '1%',
-    transform: 'scaleX(-1)',
-  },
-
-  '> img': {
-    width: '70%',
-    imageRendering: 'pixelated',
-    filter: 'invert(1)',
-  },
-  '@keyframes breathing': {
-    '0%': { transform: 'scale(0.9)' },
-    '25%': { transform: 'scale(1)' },
-    '60%': { transform: 'scale(0.9)' },
-    '100%': { transform: 'scale(0.9)' },
-  },
-  span: {
-    color: '#fff',
-    fontSize: '8vmin',
-    fontFamily: 'Courier New',
-
-    img: {
-      width: '0.75em',
-      filter: 'brightness(0) invert(1)',
-    },
-  },
-});
 
 const InputRange = styled('input')({
   margin: '0 1vmin',
@@ -199,9 +142,19 @@ const SpanRange = styled('span')({
   margin: '10px',
 });
 
-const LabelRange = styled('label')({});
+const LabelRange = styled('label')({
+  fontSize: '1.5vmin',
+});
 
-const SelectionRange = styled('select')({});
+const SelectionRange = styled('select')({
+  fontSize: '1.5vmin',
+  // color: '#fff',
+
+  // backgroundColor: '#1b1b1b',
+  // border: '1px solid #fff',
+  borderRadius: '3px',
+  padding: '0.2vmin 0 0.2vmin 0 ',
+});
 
 const OptionRange = styled('option')({});
 
@@ -209,10 +162,13 @@ export {
   DeckContainer,
   Area,
   DeckCard,
-  DeckCardCustom,
+  // DeckCardCustom,
   DeckBox,
   BoxColumn,
   InputRange,
   InputText,
   SpanRange,
+  LabelRange,
+  SelectionRange,
+  OptionRange,
 };
