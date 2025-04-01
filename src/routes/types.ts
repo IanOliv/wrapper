@@ -7,6 +7,7 @@ enum Pages {
   Welcome,
   Card,
   ARfiti,
+  DeckBoard,
   NotFound,
   CardDetail,
 }
