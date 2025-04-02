@@ -80,6 +80,7 @@ interface Animation {
 }
 
 //
+
 const renderAnimaitons = (object: any) => {
   const keys = Object.keys(object);
   const values = Object.values(object);

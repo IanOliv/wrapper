@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Scale } from '@mui/icons-material';
+import { Padding, Scale } from '@mui/icons-material';
 import { styled } from '@mui/system';
 
 interface AreaProps {
@@ -17,12 +17,14 @@ interface DeckCardProps {
   transform?: string;
   transition?: string;
   animation?: string;
-  animationName?: string;
   animationDuration?: string | '0';
   animationEasingFunction?: string | 'ease-out' | 'ease-in' | 'ease-in-out' | 'linear';
+  animationDelay?: string;
+  animationIterationCount?: string | 'infinite';
+  animationDirection?: string | 'normal';
   animationFillMode?: string | 'normal';
   animationPlayState?: string | 'running';
-  animationIterationCount?: string | 'infinite';
+  animationName?: string;
 }
 
 const DeckContainer = styled('div')(() => ({
@@ -83,6 +85,11 @@ const DeckCard = styled('div')<DeckCardProps>(
     animationEasingFunction,
     animationFillMode,
     animationIterationCount,
+    animationDirection,
+    animationDelay,
+    animationPlayState,
+    animationDuration,
+    animationName,
   }) => ({
     position: 'absolute',
     scale: scale ?? 1,
@@ -102,22 +109,66 @@ const DeckCard = styled('div')<DeckCardProps>(
     backgroundSize: '20px 20px',
     backgroundRepeat: 'repeat',
     backgroundColor: '#1b1b1b',
-    transition: 'transform 0.2s',
+    transition: '0.5s',
     border: '1vmin solid #D9D9D9',
     borderRadius: 17,
     transform,
+
     // animation: `${animation} ${duration}s ${animationEasingFunction ?? 'ease-out'} ${
     //   animationIterationCount ?? 'infinite'
     // } ${animationFillMode ?? 'normal'}`,
+    // animation: `${duration}s ${animationEasingFunction ?? 'ease-out'} ${
+    //   animationIterationCount ?? 'infinite'
+    // } ${animationFillMode ?? 'normal'}`,
+    // animation: 'idle 1s',
+    // -------------------------
+    /* @keyframes duration | easing-function | delay |
+iteration-count | direction | fill-mode | play-state | name */
+
+    // animation: `${duration}s ${animationEasingFunction ?? 'ease-out'} 0s ${animationIterationCount ?? 'infinite'} ${
+    //   animationDirection ?? 'normal'} ${
+    //   animationFillMode ?? 'both'} ${
+    //   animationPlayState ??'running'} ${
+    //   animationName ??'idle'};`,
+
     '@keyframes breathing': keyframes,
 
-    '@keyframes hover': keyframes,
+    '@keyframes hover': {
+      '0%': {},
+      // "25%": {
+      //   transform: 'scale(0.9)'
+      // },
+      '50%': {
+        transform: 'translateY(1.5rem) scale(1.1)',
+      },
+      // "75%": {
+      //   transform: 'scale(0.9)'
+      // },
+      '100%': {},
+    },
+
+    '@keyframes idle': {
+      from: {},
+      // "20%": { transform: 'translateY(0.4rem)' },
+      // "45%": { transform: 'translateY(1rem)' },
+      '50%': {
+        transform: 'translateY(1.5rem)',
+      },
+      // "55%": { transform: 'translateY(1rem)' },
+      // "10%": { transform: 'translateY(0.4rem)' },
+      to: {},
+    },
 
     '&:hover': {
       backgroundColor: '#0056b3',
-      animation: `${animation} ${duration}s ${animationEasingFunction ?? 'ease-out'} ${
-        animationIterationCount ?? 'infinite'
-      } ${animationFillMode ?? 'normal'}`,
+      transform: 'translateY(-8.2rem) scale(1.1) translateX(50px)',
+      // "margin-left":'3rem'
+      // animation: `${duration}s ${animationEasingFunction ?? 'ease-out'} 1s ${animationIterationCount ?? 'infinite'} ${animationDirection ?? 'normal'} ${animationFillMode ?? 'both'} ${animationPlayState ?? 'running'} ${animationName ?? 'hover'};`,
+
+      // 'animation-fill-mode': 'forwards'
+    },
+    ':not(&:hover)': {
+      backgroundColor: '#A056b3',
     },
 
     // animation: `${animation} ${duration}s ease-out infinite normal`,
