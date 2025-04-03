@@ -165,9 +165,7 @@ function InputAtribute(props: InputAtributeProps) {
         value={value}
         onChange={(event) => onchange(+event.target.value)}
       />
-      <InputText>
-        {name}:{value}
-      </InputText>
+      <InputText>{name}</InputText>
       <br />
     </span>
   );
@@ -220,13 +218,13 @@ function Item() {
     left: {
       value: 3.2,
       min: 0,
-      max: 11,
+      max: 8,
       step: 0.05,
     } as AttributeDetailsProps,
     top: {
       value: 0,
       min: 0,
-      max: 11,
+      max: 9,
       step: 0.05,
     } as AttributeDetailsProps,
     qnt: {
@@ -285,6 +283,7 @@ function Item() {
   const [animationOption, setAnimationOption] = useState('');
   const [animationEasingFunction, setAnimationEasingFunction] = useState('');
   const [animationIterationCount, setAnimationIterationCount] = useState('');
+  const [selection, setSelection] = useState<number[]>([]);
 
   const animation = renderAnimaitons(scaleAnimation);
 
@@ -296,28 +295,15 @@ function Item() {
     console.log(functionPosition(totalPosition - i, { initial: 1, scalar: 0.5, metric: '%' }));
     dPosition.push({
       left: functionPosition(totalPosition - i, { initial: 2, scalar: left, metric: '%' }),
-      top: functionPosition(totalPosition - i, { initial: 25, scalar: top, metric: '%' }),
+      top: functionPosition(totalPosition - i, { initial: 0, scalar: top, metric: '%' }),
     });
   }
+
+  console.log(JSON.stringify(dPosition));
 
   return (
     <DeckContainer>
       <Area>
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        <br />
-        {/* setAttributeMatrix({...attributeMatrix, left: { ...attributeMatrix.left, value: +value } })         */}
         <DeckBox>
           <BoxColumn>
             {/* <span> */}
@@ -433,6 +419,14 @@ function Item() {
               }
             />
           </BoxColumn>
+          <BoxColumn>
+            {/* <span> */}
+            <SpanRange> left : {left}</SpanRange>
+            <SpanRange> top : {top}</SpanRange>
+            <SpanRange> qnt : {qnt}</SpanRange>
+            <SpanRange> scale : {scale}</SpanRange>
+            <SpanRange> duration : {duration}</SpanRange>
+          </BoxColumn>
         </DeckBox>
 
         {dPosition.map((item, index) => (
@@ -444,6 +438,7 @@ function Item() {
             scale={scale}
             animation={animationOption}
             animationEasingFunction={animationEasingFunction}
+            className={`${selection.includes(index) ? 'selection' : ''}`}
             // animation={animationOption}
             // transform={generateTransform(
             //   calculateTransform(index, qnt).rotate,
@@ -451,6 +446,15 @@ function Item() {
             // )}
             // transform='rotate(15deg) translate(0, 1px)'
             keyframes={animation}
+            isSelected={selection.includes(index)}
+            onClick={() => {
+              if (selection.includes(index)) {
+                const filtredSelection = selection.filter((num) => num !== index);
+                setSelection([...filtredSelection]);
+              } else {
+                setSelection([...selection, index]);
+              }
+            }}
           />
         ))}
       </Area>

@@ -25,6 +25,8 @@ interface DeckCardProps {
   animationFillMode?: string | 'normal';
   animationPlayState?: string | 'running';
   animationName?: string;
+
+  isSelected?: boolean;
 }
 
 const DeckContainer = styled('div')(() => ({
@@ -38,6 +40,8 @@ const DeckBox = styled('div')(() => ({
   margin: '2%',
   padding: '2% 3%',
   position: 'absolute',
+  bottom: 0,
+  scale: '0.7',
   background: '#1e3e2d',
   borderRadius: 17,
   display: 'flex',
@@ -90,6 +94,7 @@ const DeckCard = styled('div')<DeckCardProps>(
     animationPlayState,
     animationDuration,
     animationName,
+    isSelected,
   }) => ({
     position: 'absolute',
     scale: scale ?? 1,
@@ -108,7 +113,7 @@ const DeckCard = styled('div')<DeckCardProps>(
     backgroundPosition: '10px 0px, 10px 0px, 0px 0px, 0px 0px',
     backgroundSize: '20px 20px',
     backgroundRepeat: 'repeat',
-    backgroundColor: '#1b1b1b',
+    backgroundColor: isSelected ? '#3b7b8b' : '#1b1b1b',
     transition: '0.5s',
     border: '1vmin solid #D9D9D9',
     borderRadius: 17,
@@ -159,7 +164,15 @@ iteration-count | direction | fill-mode | play-state | name */
       to: {},
     },
 
-    '&:hover': {
+    // '&:hover': {
+    //   backgroundColor: '#0056b3',
+    //   transform: 'translateY(-8.2rem) scale(1.1) translateX(50px)',
+    //   // "margin-left":'3rem'
+    //   // animation: `${duration}s ${animationEasingFunction ?? 'ease-out'} 1s ${animationIterationCount ?? 'infinite'} ${animationDirection ?? 'normal'} ${animationFillMode ?? 'both'} ${animationPlayState ?? 'running'} ${animationName ?? 'hover'};`,
+
+    //   // 'animation-fill-mode': 'forwards'
+    // },
+    '&.selection': {
       backgroundColor: '#0056b3',
       transform: 'translateY(-8.2rem) scale(1.1) translateX(50px)',
       // "margin-left":'3rem'
@@ -167,9 +180,9 @@ iteration-count | direction | fill-mode | play-state | name */
 
       // 'animation-fill-mode': 'forwards'
     },
-    ':not(&:hover)': {
-      backgroundColor: '#A056b3',
-    },
+    // ':not(&:hover)': {
+    //   backgroundColor: '#A056b3',
+    // },
 
     // animation: `${animation} ${duration}s ease-out infinite normal`,
     // '@keyframes breathing': keyframes,
