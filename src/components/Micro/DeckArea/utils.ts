@@ -63,6 +63,12 @@ export const scaleAnimation = {
   '100': 0.9,
 };
 
+interface Animation {
+  [key: string]: {
+    transform: string;
+  };
+}
+
 export const renderAnimations = (object: any) => {
   const keys = Object.keys(object);
   const values = Object.values(object);
