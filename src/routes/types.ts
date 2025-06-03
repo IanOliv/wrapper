@@ -8,7 +8,13 @@ enum Pages {
   Card,
   ARfiti,
   DeckBoard,
+  Chat,
   NotFound,
+  Stage,
+  Login,
+  Register,
+  Profile,
+  SmartToir,
   CardDetail,
 }
 
