@@ -1,14 +1,14 @@
-import DeckArea from '@/components/Micro/DeckArea';
+import Item from '@/components/Micro/Chat';
 import { FullSizeCenteredFlexBox } from '@/components/styled';
 
-function DeckBoard() {
+function Chat() {
   return (
     <>
       <FullSizeCenteredFlexBox>
-        <DeckArea />
+        <Item />
       </FullSizeCenteredFlexBox>
     </>
   );
 }
 
-export default DeckBoard;
+export default Chat;

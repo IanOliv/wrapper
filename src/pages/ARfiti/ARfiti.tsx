@@ -1,11 +1,13 @@
-import Item from '@/components/Item';
+// import Item from '@/components/Item';
+import { ARfiti as AComp } from '@/components/ARfiti';
 import { FullSizeCenteredFlexBox } from '@/components/styled';
 
 function ARfiti() {
   return (
     <>
       <FullSizeCenteredFlexBox>
-        <Item />
+        {/* <Item /> */}
+        <AComp />
       </FullSizeCenteredFlexBox>
     </>
   );
