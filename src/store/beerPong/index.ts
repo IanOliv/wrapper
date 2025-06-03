@@ -6,10 +6,20 @@ import { BeerPongTeam } from './types';
 // import { BeerPongState, BeerPongTeam } from './types';
 // import { BeerPongChampionship, BeerPongGame } from './types';
 
-// const beerPongState = atom<boolean>({
-//   key: 'beerpong-state',
+// const beerPongViewState = atom<boolean>({
+//   key: 'beerpong-view-state',
 //   default: false,
 // });
+
+// function useBeerPongViewState(): [boolean, Actions] {
+//   const [isOpen, setIsOpen] = useRecoilState(beerPongViewState);
+
+//   function toggle() {
+//     setIsOpen((isOpen: boolean) => !isOpen);
+//   }
+
+//   return [isOpen, { toggle }];
+// }
 
 // const beerPongState = atom<boolean>({
 //   key: 'beerpong-state',
