@@ -11,7 +11,7 @@ export function ARfiti() {
     <>
       <BaseMap />
       {/* <BaseStructure /> */}
-      <BaseList />
+      {/* <BaseList /> */}
     </>
   );
 }
@@ -257,46 +257,46 @@ function MapModal() {
 
 // =-----------
 
-function BaseList() {
-  return (
-    <div className="base-list">
-      <BaseListItem />
-      <BaseListItem />
-      <BaseListItem />
-      <BaseListItem />
-      <BaseListItem />
-    </div>
-  );
-}
+// function BaseList() {
+//   return (
+//     <div className="base-list">
+//       <BaseListItem />
+//       <BaseListItem />
+//       <BaseListItem />
+//       <BaseListItem />
+//       <BaseListItem />
+//     </div>
+//   );
+// }
 
-function BaseListItem() {
-  const [cssList, setCssList] = useState(['base-list-component', 'clickable']);
-  const [isSelected, setSelection] = useState(false);
-  const handleOnClick = () => {
-    if (isSelected) {
-      setCssList(cssList.filter((item) => item !== 'clicked'));
-    } else {
-      setCssList([...cssList, 'clicked']);
-    }
-    setSelection(!isSelected);
-  };
+// function BaseListItem() {
+//   const [cssList, setCssList] = useState(['base-list-component', 'clickable']);
+//   const [isSelected, setSelection] = useState(false);
+//   const handleOnClick = () => {
+//     if (isSelected) {
+//       setCssList(cssList.filter((item) => item !== 'clicked'));
+//     } else {
+//       setCssList([...cssList, 'clicked']);
+//     }
+//     setSelection(!isSelected);
+//   };
 
-  return (
-    <div className={cssList.join(' ')} onClick={handleOnClick}>
-      <h1>Base List</h1>
-      {isSelected && <ItemDetail />}
-    </div>
-  );
-}
+//   return (
+//     <div className={cssList.join(' ')} onClick={handleOnClick}>
+//       <h1>Base List</h1>
+//       {isSelected && <ItemDetail />}
+//     </div>
+//   );
+// }
 
-function ItemDetail() {
-  return (
-    <div className="item-detail">
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur sapiente dolores
-        tenetur blanditiis, deserunt voluptate earum quis animi itaque porro in, ipsa quod ipsum
-        corrupti numquam mollitia officiis! Sunt, voluptatem!
-      </p>
-    </div>
-  );
-}
+// function ItemDetail() {
+//   return (
+//     <div className="item-detail">
+//       <p>
+//         Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur sapiente dolores
+//         tenetur blanditiis, deserunt voluptate earum quis animi itaque porro in, ipsa quod ipsum
+//         corrupti numquam mollitia officiis! Sunt, voluptatem!
+//       </p>
+//     </div>
+//   );
+// }
