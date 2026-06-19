@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import React from 'react';
-import Webcam from 'react-webcam';
 
+// import Webcam from 'react-webcam';
 import { MapSecondaryButton } from './styled';
 import './styles.css';
 
@@ -43,7 +43,7 @@ function BaseMap() {
 
   // const [deviceId, setDeviceId] = useState<MediaDeviceInfo>();
 
-  const [isModalOpen] = useState(true);
+  // const [isModalOpen] = useState(true);
 
   // const handleOnClick = () => {
   //   // if (!isSelected) {
@@ -66,7 +66,7 @@ function BaseMap() {
       <BaseRoundButton />
       <div className={mapCssList.join(' ')}>
         <h1>Base map </h1>
-        {isModalOpen && <MapModal />}
+        {/* {isModalOpen && <MapModal />} */}
       </div>
       {isSelected && <MapDetails />}
       {/* </BaseSquare> */}
@@ -151,36 +151,36 @@ function MapInfoSkeleton() {
   return <div className="map-skeleton">+</div>;
 }
 
-const videoConstraints = {
-  width: 1080,
-  height: 1080,
-  facingMode: 'front',
-};
+// const videoConstraints = {
+//   width: 1080,
+//   height: 1080,
+//   facingMode: 'front',
+// };
 
-function MapModal() {
-  const webcamRef = useRef<Webcam>(null);
-  // const [imgSrc, setImgSrc] = useState<string | null | undefined>(null);
-  // const capture = useCallback(() => {
-  //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //   // @ts-ignore
-  //   const imageSrc = webcamRef?.current?.getScreenshot();
-  //   setImgSrc(imageSrc);
-  //   // console.log(imageSrc);
-  // }, [webcamRef]);
+// function MapModal() {
+//   const webcamRef = useRef<Webcam>(null);
+//   // const [imgSrc, setImgSrc] = useState<string | null | undefined>(null);
+//   // const capture = useCallback(() => {
+//   //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//   //   // @ts-ignore
+//   //   const imageSrc = webcamRef?.current?.getScreenshot();
+//   //   setImgSrc(imageSrc);
+//   //   // console.log(imageSrc);
+//   // }, [webcamRef]);
 
-  return (
-    <div className="map-modal">
-      <Webcam
-        className="modal-webcam "
-        ref={webcamRef}
-        audio={false}
-        screenshotFormat="image/jpeg"
-        videoConstraints={videoConstraints}
-      />
-      {/* <ModalCamera/> */}
-    </div>
-  );
-}
+//   return (
+//     <div className="map-modal">
+//       <Webcam
+//         className="modal-webcam "
+//         ref={webcamRef}
+//         audio={false}
+//         screenshotFormat="image/jpeg"
+//         videoConstraints={videoConstraints}
+//       />
+//       {/* <ModalCamera/> */}
+//     </div>
+//   );
+// }
 
 // function ModalCamera() {
 //     const webcamRef = useRef(null);

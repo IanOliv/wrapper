@@ -2,9 +2,6 @@ import * as React from 'react';
 
 import { motion, useMotionValue } from 'framer-motion';
 
-// import { Base } from '@/components/Base';
-// import { BeerPong } from '@/components/BeerPong';
-// import { Camera } from '@/components/Camera';
 import { ARfiti } from '@/components/ARfiti';
 
 interface ContentPlaceholderProps {

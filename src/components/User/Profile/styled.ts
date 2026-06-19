@@ -69,9 +69,9 @@ export const AreaW = styled('div')(() => ({
 
 export const ColumnContainer = styled('div')(() => ({
   height: '85%',
-  width: '22%',
-  // margin: '3% 3% 0 0',
-  marginTop: '3%',
+  width: '40%',
+  margin: '3% 3% 3% 3%',
+  // marginTop: '3%',
   position: 'relative',
   display: 'flex',
   flexDirection: 'column',
@@ -111,7 +111,7 @@ export const VerticalList = styled('ul')(() => ({
 export const ListItem = styled('li')(() => ({
   padding: '4px',
   margin: '0 0.5rem',
-  fontSize: '8px',
+  fontSize: '18px',
   borderBottom: '1px solid #ddd',
   '&:last-child': {
     borderBottom: 'none',
