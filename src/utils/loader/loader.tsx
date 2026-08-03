@@ -99,7 +99,7 @@ const getLazyComponent = (loadComponent: LoadComponent, loaderOptions: LoaderDef
 // will secure us from having any kind of blinking in the process of asynchronous loadings
 
 // INFO: the usage of `asyncComponentLoader` looks like this:
-// asyncComponentLoader(() => import('pages/Welcome'))
+// asyncComponentLoader(() => import('pages/Card'))
 
 function asyncComponentLoader(
   loadComponent: LoadComponent,

@@ -6,23 +6,27 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { withErrorHandler } from '@/error-handling';
 import AppErrorBoundaryFallback from '@/error-handling/fallbacks/App';
 import Pages from '@/routes/Pages';
-import Header from '@/sections/Header';
+import CommandPalette from '@/sections/CommandPalette';
 import HotKeys from '@/sections/HotKeys';
 import Notifications from '@/sections/Notifications';
 import SW from '@/sections/SW';
-import Sidebar from '@/sections/Sidebar';
+import Shell from '@/sections/Shell';
+import RouteTracker from '@/sections/Shell/RouteTracker';
 
 function App() {
   return (
     <Fragment>
       <CssBaseline />
       <Notifications />
-      <HotKeys />
       <SW />
       <BrowserRouter>
-        <Header />
-        <Sidebar />
-        <Pages />
+        {/* palette and hotkeys navigate, so they live inside the router */}
+        <HotKeys />
+        <CommandPalette />
+        <RouteTracker />
+        <Shell>
+          <Pages />
+        </Shell>
       </BrowserRouter>
     </Fragment>
   );

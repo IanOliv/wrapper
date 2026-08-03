@@ -1,14 +1,13 @@
+import Meta from '@/components/Meta';
 import Item from '@/components/Micro/SmartToir';
-import { FullSizeCenteredFlexBox } from '@/components/styled';
 
-function Chat() {
+function SmartToir() {
   return (
     <>
-      <FullSizeCenteredFlexBox>
-        <Item />
-      </FullSizeCenteredFlexBox>
+      <Meta title="Sensors" />
+      <Item />
     </>
   );
 }
 
-export default Chat;
+export default SmartToir;

@@ -1,19 +1,18 @@
-import { Route, Routes } from 'react-router-dom';
-
-import Box from '@mui/material/Box';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
 import routes from '..';
-import { getPageHeight } from './utils';
+import { Pages as PageKeys } from '../types';
+import { mountedRoutes } from '../utils';
 
 function Pages() {
   return (
-    <Box sx={{ height: (theme) => getPageHeight(theme) }}>
-      <Routes>
-        {Object.values(routes).map(({ path, component: Component }) => {
-          return <Route key={path} path={path} element={<Component />} />;
-        })}
-      </Routes>
-    </Box>
+    <Routes>
+      {/* `/` is not a page of its own — the feed is the home of the app. */}
+      <Route path="/" element={<Navigate to={routes[PageKeys.Card].path} replace />} />
+      {mountedRoutes().map(({ path, component: Component }) => (
+        <Route key={path} path={path} element={<Component />} />
+      ))}
+    </Routes>
   );
 }
 
