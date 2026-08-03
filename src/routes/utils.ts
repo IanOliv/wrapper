@@ -17,6 +17,15 @@ function routesInGroup(group: NavGroup): Route[] {
   return mountedRoutes().filter((route) => route.group === group && route.title);
 }
 
+/**
+ * Somewhere ⌘K can actually send you. `/card/:id` has a title so the header can
+ * read it, but the literal path is not a destination — navigating to it would
+ * put `:id` in the address bar.
+ */
+function isNavigable(route: Route): boolean {
+  return Boolean(route.title) && route.path !== '*' && !route.path.includes(':');
+}
+
 /** `/card/:id` keeps "Cards" lit — a detail state is still the same room. */
 function isRouteActive(route: Route, pathname: string): boolean {
   if (route.path === '*') return false;
@@ -34,4 +43,4 @@ function useActiveRoute(): Route | undefined {
 }
 
 export type { Route };
-export { allRoutes, mountedRoutes, routesInGroup, isRouteActive, useActiveRoute };
+export { allRoutes, mountedRoutes, routesInGroup, isNavigable, isRouteActive, useActiveRoute };

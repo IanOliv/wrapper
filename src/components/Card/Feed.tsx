@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
@@ -13,6 +13,7 @@ import { Pages } from '@/routes/types';
 import Card from './Card';
 import Detail from './Detail';
 import cards from './data';
+import useScrollLock from './useScrollLock';
 
 const ALL = 'All';
 
@@ -31,8 +32,12 @@ function Feed() {
   const visible = filter === ALL ? cards : cards.filter((card) => card.category === filter);
   const selected = cards.find((card) => card.id === id);
 
+  // the feed must not slide around behind the centred detail
+  const rootRef = useRef<HTMLDivElement>(null);
+  useScrollLock(rootRef, Boolean(selected));
+
   return (
-    <Box>
+    <Box ref={rootRef}>
       <Typography variant="h1">Feed</Typography>
       <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
         {cards.length} cards · updated 4 min ago

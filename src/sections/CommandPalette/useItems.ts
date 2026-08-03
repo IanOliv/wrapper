@@ -14,7 +14,7 @@ import {
 import { repository } from '@/config';
 import routes from '@/routes';
 import { NavGroup, Pages } from '@/routes/types';
-import { mountedRoutes } from '@/routes/utils';
+import { isNavigable, mountedRoutes } from '@/routes/utils';
 import useHotKeysDialog from '@/store/hotkeys';
 import useRecents from '@/store/recents';
 import { useWrapperSessionState } from '@/store/session';
@@ -47,7 +47,7 @@ function useItems(close: () => void): PaletteItem[] {
   const isSignedIn = Boolean(session.token);
 
   return useMemo(() => {
-    const navigable = mountedRoutes().filter((route) => route.title && route.path !== '*');
+    const navigable = mountedRoutes().filter(isNavigable);
 
     const go = (path: string) => () => {
       close();

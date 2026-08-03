@@ -103,10 +103,13 @@ const routes: Routes = {
     paletteGroup: 'Account',
     aliases: ['register', 'sign up', 'signup', 'join'],
   },
-  // A detail state of the feed, reached by tapping a card.
+  // A detail state of the feed, reached by tapping a card. The title is what the
+  // header reads — you are still in Cards, so it says Cards.
   [Pages.CardDetail]: {
     component: asyncComponentLoader(() => import('@/pages/Card')),
     path: '/card/:id',
+    title: 'Cards',
+    icon: Cards,
     group: NavGroup.Hidden,
   },
   [Pages.Tokens]: {
