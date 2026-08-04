@@ -15,7 +15,12 @@ function useWrapperSessionState(): [WrapperSession, Actions] {
     setWSession(wSession);
   }
 
-  return [wrapperSession, { addSession }];
+  // "Sign out" in the account menu needs one place to undo this.
+  function clearSession() {
+    setWSession({} as WrapperSession);
+  }
+
+  return [wrapperSession, { addSession, clearSession }];
 }
 
 export { useWrapperSessionState };

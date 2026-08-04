@@ -1,109 +1,51 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { Padding, Scale } from '@mui/icons-material';
-import { margin, styled, width } from '@mui/system';
+import Box from '@mui/material/Box';
+import { styled } from '@mui/material/styles';
 
-export interface DeckCardProps {
-  left?: number | string;
-  top?: number | string;
-  isShadowEnabled?: boolean;
-  scale?: number;
-  duration: number | 0;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  keyframes?: any;
-  transform?: string;
-  transition?: string;
-  animation?: string;
-  animationDuration?: string | '0';
-  animationEasingFunction?: string | 'ease-out' | 'ease-in' | 'ease-in-out' | 'linear';
-  animationDelay?: string;
-  animationIterationCount?: string | 'infinite';
-  animationDirection?: string | 'normal';
-  animationFillMode?: string | 'normal';
-  animationPlayState?: string | 'running';
-  animationName?: string;
+// Chat was not designed; it is built from the shell's tokens and the module
+// contract — no new steps in the type, radius or spacing scales.
 
-  isSelected?: boolean;
-  isFlipped?: boolean;
-}
-
-interface CardProps {
-  isFlipped?: boolean;
-}
-
-export const DeckContainer = styled('div')(() => ({
-  height: '100%',
-  width: '100%',
-  position: 'relative',
-  display: 'flex',
-  flexDirection: 'row',
-}));
-
-export const Area = styled('div')(() => ({
-  height: '96%',
-  width: '96%',
-  position: 'absolute',
-  // left: 0,
-  // top: 0,
-  margin: '2%',
-  'margin-top': '1%',
-  background: '#356D55',
-  borderRadius: 17,
-  overflow: 'hidden',
-}));
-
-export const Message = styled('div')(() => ({
-  padding: '1rem',
-  borderRadius: '1rem',
-  maxWidth: '90%',
-  minWidth: '20%',
-  wordWrap: 'break-word',
-  overflowWrap: 'break-word',
-  hyphens: 'auto',
-}));
-
-export const MessageList = styled('div')(() => ({
-  padding: '1rem',
-  background: '#FF0B55',
+const ChatSurface = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
-  justifyContent: 'space-between',
-  maxHeight: '82%',
-  scrollbarColor: '#c40840 #c40840',
-  overflow: 'auto',
-  '& > div': {
-    margin: '1rem',
-  },
-  '& > .outcome': {
-    background: '#3AA6B9',
-    marginLeft: 'auto',
-  },
-  '& > .income': {
-    background: '#69247C',
-    marginRight: 'auto',
-  },
+  height: '100%',
+  minHeight: 0,
+  borderRadius: 8,
+  overflow: 'hidden',
+  backgroundColor: theme.palette.background.paper,
+  boxShadow: theme.shell.ring[1],
 }));
 
-export const MessageInput = styled('div')(() => ({
-  position: 'absolute',
-  width: '100%',
-  background: '#F26B0F',
-  bottom: '1rem',
-  padding: '1rem',
+const MessageList = styled(Box)(({ theme }) => ({
+  flexGrow: 1,
+  minHeight: 0,
+  overflowY: 'auto',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: theme.spacing(1.5),
+  padding: theme.spacing(2),
 }));
 
-export const LabelTextarea = styled('label')(() => ({}));
-export const InputTextarea = styled('textarea')(() => ({
-  width: '100%',
-  height: '3rem',
-  border: 'none',
-  resize: 'none',
-  borderRadius: '0.4rem',
-  fontSize: '1rem',
+const Message = styled(Box, { shouldForwardProp: (prop) => prop !== 'own' })<{ own: boolean }>(
+  ({ theme, own }) => ({
+    maxWidth: '80%',
+    padding: `${theme.spacing(1)} ${theme.spacing(1.5)}`,
+    borderRadius: 8,
+    fontSize: '0.9375rem',
+    lineHeight: 1.55,
+    wordBreak: 'break-word',
+    alignSelf: own ? 'flex-end' : 'flex-start',
+    color: theme.palette.text.primary,
+    backgroundColor: own ? theme.shell.tint : theme.shell.surface.level2,
+    border: own ? 'none' : `1px solid ${theme.shell.border.subtle}`,
+  }),
+);
+
+const Composer = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'flex-end',
+  gap: theme.spacing(1),
+  padding: theme.spacing(2),
+  borderTop: `1px solid ${theme.shell.border.subtle}`,
 }));
-export const InputButton = styled('button')(() => ({
-  fontSize: '1rem',
-  background: '#F26B0F',
-  color: '#fff',
-  border: '1px solid #fff',
-  borderRadius: '0.4rem',
-}));
+
+export { ChatSurface, MessageList, Message, Composer };

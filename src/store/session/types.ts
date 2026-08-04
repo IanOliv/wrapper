@@ -12,6 +12,7 @@ interface WrapperProfile {
 
 type Actions = {
   addSession: (wSession: WrapperSession) => void;
+  clearSession: () => void;
 };
 
 export type { Actions, WrapperSession };

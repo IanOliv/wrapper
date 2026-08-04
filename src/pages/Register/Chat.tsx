@@ -1,14 +1,13 @@
+import Meta from '@/components/Meta';
 import Item from '@/components/User/Register';
-import { FullSizeCenteredFlexBox } from '@/components/styled';
 
-function Chat() {
+function Register() {
   return (
     <>
-      <FullSizeCenteredFlexBox>
-        <Item />
-      </FullSizeCenteredFlexBox>
+      <Meta title="Create account" />
+      <Item />
     </>
   );
 }
 
-export default Chat;
+export default Register;
