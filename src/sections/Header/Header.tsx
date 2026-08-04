@@ -1,100 +1,71 @@
-import GitHubIcon from '@mui/icons-material/GitHub';
-import ThemeIcon from '@mui/icons-material/InvertColors';
-import MenuIcon from '@mui/icons-material/Menu';
-import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-import { FlexBox } from '@/components/styled';
-import { repository, title } from '@/config';
-import useHotKeysDialog from '@/store/hotkeys';
-import useNotifications from '@/store/notifications';
-import useSidebar from '@/store/sidebar';
-import useTheme from '@/store/theme';
+import { MagnifyingGlass } from '@phosphor-icons/react';
 
-import { HotKeysButton } from './styled';
-import { getRandomJoke } from './utils';
+import Mark from '@/components/Mark';
+import { title } from '@/config';
+import { useActiveRoute } from '@/routes/utils';
+import useCommandPalette from '@/store/palette';
+import { metaKeyLabel } from '@/utils/platform';
 
+import AccountMenu from './AccountMenu';
+import { JumpToButton, JumpToIconButton } from './styled';
+
+// 56px on mobile (plus the safe-area inset), 60px on desktop. Elevation 1, opaque.
+// The mark, the module name, "Jump to…", the avatar. Nothing else — the GitHub
+// link moved into the account sheet.
 function Header() {
-  const [, sidebarActions] = useSidebar();
-  const [, themeActions] = useTheme();
-  const [, notificationsActions] = useNotifications();
-  const [, hotKeysDialogActions] = useHotKeysDialog();
+  const theme = useTheme();
+  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+  const activeRoute = useActiveRoute();
+  const [, paletteActions] = useCommandPalette();
 
-  function showNotification() {
-    notificationsActions.push({
-      options: {
-        // Show fully customized notification
-        // Usually, to show a notification, you'll use something like this:
-        // notificationsActions.push({ message: ... })
-        // `message` accepts string as well as ReactNode
-        // But you also can use:
-        // notificationsActions.push({ options: { content: ... } })
-        // to show fully customized notification
-        content: (
-          <Alert severity="info">
-            <AlertTitle>Notification demo (random IT jokes :))</AlertTitle>
-            {getRandomJoke()}
-          </Alert>
-        ),
-      },
-    });
-  }
+  const moduleName = activeRoute?.title ?? title;
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar color="transparent" elevation={1} position="static">
-        <Toolbar sx={{ justifyContent: 'space-between' }}>
-          <FlexBox sx={{ alignItems: 'center' }}>
-            <IconButton
-              onClick={sidebarActions.toggle}
-              size="large"
-              edge="start"
-              color="info"
-              aria-label="menu"
-              sx={{ mr: 1 }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Button onClick={showNotification} color="info">
-              {title}
-            </Button>
-          </FlexBox>
-          <FlexBox>
-            <FlexBox>
-              <Tooltip title="Hot keys" arrow>
-                <HotKeysButton
-                  size="small"
-                  variant="outlined"
-                  aria-label="open hotkeys dialog"
-                  onClick={hotKeysDialogActions.open}
-                >
-                  alt + /
-                </HotKeysButton>
-              </Tooltip>
-            </FlexBox>
-            <Divider orientation="vertical" flexItem />
-            <Tooltip title="It's open source" arrow>
-              <IconButton color="info" size="large" component="a" href={repository} target="_blank">
-                <GitHubIcon />
-              </IconButton>
-            </Tooltip>
-            <Divider orientation="vertical" flexItem />
-            <Tooltip title="Switch theme" arrow>
-              <IconButton color="info" edge="end" size="large" onClick={themeActions.toggle}>
-                <ThemeIcon />
-              </IconButton>
-            </Tooltip>
-          </FlexBox>
-        </Toolbar>
-      </AppBar>
-    </Box>
+    <AppBar position="static" sx={{ flexShrink: 0, pt: 'env(safe-area-inset-top)' }}>
+      <Toolbar sx={{ gap: 2, px: { xs: 2, md: 3 } }}>
+        {/* Mobile drops the wordmark to the mark; the module name stays. */}
+        <Mark size={24} wordmark={isDesktop} />
+
+        <Box
+          sx={{ height: 20, width: '1px', flexShrink: 0, bgcolor: (t) => t.shell.border.card }}
+        />
+
+        <Typography
+          variant="h4"
+          noWrap
+          title={moduleName}
+          sx={{ flexGrow: 1, minWidth: 0, color: 'text.primary' }}
+        >
+          {moduleName}
+        </Typography>
+
+        {isDesktop ? (
+          <JumpToButton onClick={paletteActions.open} aria-label="Jump to a module or action">
+            <MagnifyingGlass size={16} />
+            <span>Jump to…</span>
+            <Box component="kbd" className="jump-to-cap">
+              {metaKeyLabel}K
+            </Box>
+          </JumpToButton>
+        ) : (
+          <Tooltip title="Jump to…" arrow>
+            <JumpToIconButton onClick={paletteActions.open} aria-label="Jump to a module or action">
+              <MagnifyingGlass size={20} />
+            </JumpToIconButton>
+          </Tooltip>
+        )}
+
+        <AccountMenu />
+      </Toolbar>
+    </AppBar>
   );
 }
 

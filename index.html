@@ -1,44 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>WRAPPER</title>
+    <title>Wrapper</title>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- https://web.dev/uses-rel-preconnect -->
-    <link rel="preconnect" href="https://storage.googleapis.com">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-    <meta name="description" content="Starter kit for modern web applications">
+    <meta name="description" content="One shell. Every module.">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="alternate icon" href="/favicon.ico" type="image/png" sizes="16x16">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
-    <link rel="mask-icon" href="/favicon.svg" color="#FFFFFF">
-    <meta name="theme-color" content="#ffffff">
+    <link rel="mask-icon" href="/favicon.svg" color="#B5ABFC">
+
+    <!-- The app boots dark, so the status bar must too — otherwise the phone
+         flashes white on every launch. -->
+    <meta name="theme-color" content="#0F1119" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#F4F4F7" media="(prefers-color-scheme: light)">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <meta name="keywords" content="pwa" />
 
     <meta
-      name="description"
-      content="Starter kit for modern web applications"
-      data-react-helmet="true"
-    />
-    <meta
       property="og:title"
-      content="React-PWA"
+      content="Wrapper"
       data-react-helmet="true"
     >
     <meta
       property="og:description"
-      content="Starter kit for modern web applications"
-      data-react-helmet="true"
-    >
-    <meta
-      property="og:url"
-      content="https://react-pwa.surenatoyan.com/"
+      content="One shell. Every module."
       data-react-helmet="true"
     >
     <meta
       property="og:image"
-      content="https://react-pwa.surenatoyan.com/cover.png"
+      content="/cover.png"
       data-react-helmet="true"
     />
     <meta
@@ -46,11 +39,6 @@
       content="summary"
       data-react-helmet="true"
     />
-
-    <!-- https://web.dev/defer-non-critical-css/ -->
-    <link rel="preload" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-
-    
   </head>
   <body>
     <div id="root"></div>

@@ -1,39 +1,38 @@
-import EmailIcon from '@mui/icons-material/Email';
-import RestartIcon from '@mui/icons-material/RestartAlt';
-import Box from '@mui/material/Box';
+import type { FallbackProps } from 'react-error-boundary';
+
 import Button from '@mui/material/Button';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
 
-import { FullSizeCenteredFlexBox } from '@/components/styled';
-import { email, messages } from '@/config';
-import resetApp from '@/utils/reset-app';
+import { ArrowCounterClockwise, Cards, PlugsConnected } from '@phosphor-icons/react';
 
-function AppErrorBoundaryFallback() {
+import ErrorScreen from '@/components/ErrorScreen';
+import { messages } from '@/config';
+import routes from '@/routes';
+import { Pages } from '@/routes/types';
+
+// Module crash: "This module came off its hinges." → Retry / Back to Cards.
+function AppErrorBoundaryFallback({ error, resetErrorBoundary }: Partial<FallbackProps>) {
   return (
-    <Box height={400}>
-      <FullSizeCenteredFlexBox>
-        <Paper sx={{ p: 5 }}>
-          <Typography variant="h5" component="h3">
-            {messages.app.crash.title}
-          </Typography>
+    <ErrorScreen
+      icon={PlugsConnected}
+      severity="error"
+      title={messages.app.crash.title}
+      body={messages.app.crash.body}
+      code={error?.name ? error.name.toLowerCase() : 'module-crashed'}
+      actions={
+        <>
           <Button
-            startIcon={<EmailIcon />}
-            variant="outlined"
-            target="_blank"
-            rel="noreferrer"
-            href={`mailto: ${email}`}
-            sx={{ my: 3 }}
+            color="primary"
+            startIcon={<ArrowCounterClockwise size={16} />}
+            onClick={() => (resetErrorBoundary ? resetErrorBoundary() : window.location.reload())}
           >
-            {messages.app.crash.options.email}
+            {messages.app.crash.options.retry}
           </Button>
-          <Typography component="h6">or</Typography>
-          <Button startIcon={<RestartIcon />} sx={{ mt: 3 }} variant="outlined" onClick={resetApp}>
-            {messages.app.crash.options.reset}
+          <Button color="inherit" startIcon={<Cards size={16} />} href={routes[Pages.Card].path}>
+            {messages.app.crash.options.home}
           </Button>
-        </Paper>
-      </FullSizeCenteredFlexBox>
-    </Box>
+        </>
+      }
+    />
   );
 }
 

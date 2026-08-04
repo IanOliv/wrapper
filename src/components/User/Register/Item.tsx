@@ -1,8 +1,27 @@
 import { useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 
-import { Area, DeckContainer } from './styled';
-import { InputButton } from './styled';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import Link from '@mui/material/Link';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 
+import {
+  CheckCircle,
+  GithubLogo,
+  GoogleLogo,
+  InstagramLogo,
+  WarningCircle,
+} from '@phosphor-icons/react';
+
+import Mark from '@/components/Mark';
+import routes from '@/routes';
+import { Pages } from '@/routes/types';
+
+// NOTE: still UI-only — `doRegister()` in `utils/micro/api` is not wired up, and
+// the social buttons still only alert. Restyled to the tokens, behaviour unchanged.
 function Register() {
   const [register, setRegister] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
@@ -14,11 +33,13 @@ function Register() {
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!register.username || !register.password) {
       setError('Please enter both username and password.');
       setSuccess('');
       return;
     }
+
     setError('');
     setSuccess('Registration successful! (Simulated)');
     // TODO: Implement registration logic here
@@ -29,93 +50,98 @@ function Register() {
     alert(`Sign up with ${provider} (not implemented)`);
   };
 
+  const providers = [
+    { name: 'Google', icon: GoogleLogo },
+    { name: 'GitHub', icon: GithubLogo },
+    { name: 'Instagram', icon: InstagramLogo },
+  ];
+
   return (
-    <DeckContainer>
-      <Area
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '80vh',
-        }}
+    <Box sx={{ maxWidth: 360, mx: 'auto', py: { xs: 2, md: 6 } }}>
+      <Mark size={32} />
+
+      <Typography sx={{ fontSize: 23, fontWeight: 600, lineHeight: 1.25, mt: 3 }}>
+        Create an account.
+      </Typography>
+
+      <Box
+        component="form"
+        onSubmit={handleRegister}
+        sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 4 }}
       >
-        <form
-          onSubmit={handleRegister}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '1rem',
-            maxWidth: 300,
-            width: '100%',
-            alignItems: 'center',
-            background: '#fff',
-            padding: '2rem',
-            borderRadius: '8px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-            color: '#222',
-          }}
-        >
-          <h2 style={{ marginBottom: '1rem', color: '#222' }}>Sign Up</h2>
-          <label htmlFor="register-username" style={{ alignSelf: 'flex-start', color: '#222' }}>
-            Username or Email:
-          </label>
-          <input
-            id="register-username"
-            name="username"
-            type="text"
-            value={register.username}
-            onChange={handleChange}
-            autoComplete="username"
-            style={{ width: '100%', color: '#222' }}
-          />
-          <label htmlFor="register-password" style={{ alignSelf: 'flex-start', color: '#222' }}>
-            Password:
-          </label>
-          <input
-            id="register-password"
-            name="password"
-            type="password"
-            value={register.password}
-            onChange={handleChange}
-            autoComplete="new-password"
-            style={{ width: '100%', color: '#222' }}
-          />
-          {error && <div style={{ color: 'red', width: '100%' }}>{error}</div>}
-          {success && <div style={{ color: 'green', width: '100%' }}>{success}</div>}
-          <InputButton type="submit" style={{ width: '100%' }}>
-            Sign Up
-          </InputButton>
-          <div style={{ width: '100%', textAlign: 'center', margin: '1rem 0', color: '#888' }}>
-            or sign up with
-          </div>
-          <div style={{ display: 'flex', gap: '0.5rem', width: '100%', justifyContent: 'center' }}>
-            <InputButton
-              type="button"
-              style={{ background: '#4285F4', color: '#fff', flex: 1 }}
-              onClick={() => handleProviderSignUp('Google')}
-            >
-              Google
-            </InputButton>
-            <InputButton
-              type="button"
-              style={{ background: '#333', color: '#fff', flex: 1 }}
-              onClick={() => handleProviderSignUp('GitHub')}
-            >
-              GitHub
-            </InputButton>
-            <InputButton
-              type="button"
-              style={{ background: '#E1306C', color: '#fff', flex: 1 }}
-              onClick={() => handleProviderSignUp('Instagram')}
-            >
-              Instagram
-            </InputButton>
-          </div>
-        </form>
-      </Area>
-    </DeckContainer>
+        <TextField
+          id="register-username"
+          name="username"
+          label="Username or email"
+          value={register.username}
+          onChange={handleChange}
+          autoComplete="username"
+          size="small"
+          fullWidth
+        />
+        <TextField
+          id="register-password"
+          name="password"
+          type="password"
+          label="Password"
+          value={register.password}
+          onChange={handleChange}
+          autoComplete="new-password"
+          size="small"
+          fullWidth
+        />
+
+        {error && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'error.main' }}>
+            <WarningCircle size={16} />
+            <Typography variant="body2" sx={{ color: 'inherit' }}>
+              {error}
+            </Typography>
+          </Box>
+        )}
+        {success && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'success.main' }}>
+            <CheckCircle size={16} />
+            <Typography variant="body2" sx={{ color: 'inherit' }}>
+              {success}
+            </Typography>
+          </Box>
+        )}
+
+        <Button type="submit" color="primary" fullWidth sx={{ mt: 1 }}>
+          Sign up
+        </Button>
+      </Box>
+
+      <Divider sx={{ my: 3 }}>
+        <Typography variant="overline" sx={{ color: 'text.secondary' }}>
+          or
+        </Typography>
+      </Divider>
+
+      <Box sx={{ display: 'flex', gap: 1 }}>
+        {providers.map(({ name, icon: Icon }) => (
+          <Button
+            key={name}
+            color="inherit"
+            startIcon={<Icon size={16} />}
+            onClick={() => handleProviderSignUp(name)}
+            sx={{ flex: 1 }}
+          >
+            {name}
+          </Button>
+        ))}
+      </Box>
+
+      <Typography variant="body2" sx={{ color: 'text.secondary', mt: 3 }}>
+        Already have an account?{' '}
+        <Link component={RouterLink} to={routes[Pages.Login].path}>
+          Sign in
+        </Link>
+        .
+      </Typography>
+    </Box>
   );
 }
 
-// export default Register ;
 export default Register;

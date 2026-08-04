@@ -1,81 +1,131 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-// import { useWrapperSessionState } from '@/store/session';
-// import { WrapperSession } from '@/store/session/types';
-import { AreaW, ColumnContainer, DeckContainer, List, ListItem } from './styled';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 
-interface Sensor {
-  name: string;
-}
+import { ArrowsClockwise } from '@phosphor-icons/react';
 
-const getSensors = async () => {
-  const data = await fetch('http://localhost:3000/sensors');
-  console.log(data);
-  if (!data.ok) {
-    throw new Error('Failed to fetch sensors');
-  }
-  const json = await data.json();
+import SensorRow from './SensorRow';
+import StatTile from './StatTile';
+import type { Sensor } from './types';
+import { placeholderSensors, summarise } from './utils';
 
-  console.log('Login successful');
-  console.log(json);
-  return json;
+// NOTE: still the module's own hardcoded endpoint — see `utils/micro/api` for
+// where new calls should go.
+const getSensors = async (): Promise<Sensor[]> => {
+  const response = await fetch('http://localhost:3000/sensors');
+
+  if (!response.ok) throw new Error('Failed to fetch sensors');
+
+  return response.json();
 };
 
+// The densest screen in the app: a stat tile row, then the sensor list.
 function Item() {
-  // const textRef = useRef<HTMLTextAreaElement>(null);
-  // const [wrapperSession, { addSession }] = useWrapperSessionState();
+  const [sensors, setSensors] = useState<Sensor[]>(placeholderSensors);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isLive, setIsLive] = useState(false);
 
-  // // Login form state
-  // const [login, setLogin] = useState({ username: '', password: '' });
-  // const [error, setError] = useState('');
-  const [sensors, setSensors] = useState<Sensor[]>([]);
-  // const [sensorDetails, setSensorDetails] = useState<Sensor[]>([]);
+  const refresh = useCallback(async () => {
+    setIsRefreshing(true);
 
-  const getAsyncSensors = async () => {
     try {
-      const sensorsData = await getSensors();
-      console.log('Sensors data:', sensorsData);
-      setSensors(sensorsData);
-    } catch (error) {
-      console.error('Error fetching sensors:', error);
+      const data = await getSensors();
+
+      if (Array.isArray(data) && data.length) {
+        setSensors(data);
+        setIsLive(true);
+      }
+    } catch {
+      // The gateway is a local process that is often not running. Keeping the
+      // last layout on screen beats an empty panel.
+      setIsLive(false);
+    } finally {
+      setIsRefreshing(false);
     }
-  };
-
-  // const getAsyncSensorDetails = async (sensorId: string) => {
-  //   try {
-  //     const data = await fetch(`http://localhost:3000/sensors/${sensorId}`);
-  //     if (!data.ok) {
-  //       throw new Error('Failed to fetch sensor details');
-  //     }
-  //     const sensorDetails = await data.json();
-  //     console.log('Sensor details:', sensorDetails);
-  //     setSensorDetails(sensorDetails);
-  //     return sensorDetails;
-  //   } catch (error) {
-  //     console.error('Error fetching sensor details:', error);
-  //     throw error;
-  //   }
-  // };
-
-  useEffect(() => {
-    getAsyncSensors();
   }, []);
 
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  const tiles = summarise(sensors);
+  const needsAttention = sensors.filter((sensor) => sensor.outOfRange).length;
+
   return (
-    <DeckContainer>
-      <ColumnContainer>
-        <AreaW>
-          <List>
-            {sensors.map((sensor, index) => (
-              <ListItem key={index}>{sensor.name}</ListItem>
-            ))}
-          </List>
-        </AreaW>
-        <br />
-        <br />
-        <AreaW></AreaW>
-      </ColumnContainer>
-    </DeckContainer>
+    <Box>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          gap: 2,
+          mb: 4,
+        }}
+      >
+        <Box>
+          <Typography variant="h1">Sensor network</Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
+            {sensors.length} devices · {needsAttention || 'none'}{' '}
+            {needsAttention === 1 ? 'needs' : 'need'} attention ·{' '}
+            {isLive ? 'live gateway' : 'sample readings'}
+          </Typography>
+        </Box>
+        <Button
+          color="primary"
+          startIcon={<ArrowsClockwise size={16} />}
+          onClick={refresh}
+          disabled={isRefreshing}
+        >
+          Refresh
+        </Button>
+      </Box>
+
+      {/* Existing content never disappears for a refresh: it dims to 50% and
+          keeps its layout. */}
+      <Box
+        sx={{
+          opacity: isRefreshing ? 0.5 : 1,
+          transition: (theme) =>
+            `opacity ${theme.shell.motion.duration.state}ms ${theme.shell.motion.easing.state}`,
+        }}
+      >
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' },
+            gap: { xs: 2, md: 3 },
+          }}
+        >
+          {tiles.map((tile) => (
+            <StatTile key={tile.label} {...tile} />
+          ))}
+        </Box>
+
+        <Typography variant="overline" sx={{ color: 'text.secondary', display: 'block', mt: 4 }}>
+          All sensors
+        </Typography>
+
+        <Box
+          sx={{
+            mt: 1,
+            borderRadius: 1,
+            overflow: 'hidden',
+            backgroundColor: 'background.paper',
+            boxShadow: (theme) => theme.shell.ring[1],
+          }}
+        >
+          {sensors.map((sensor, index) => (
+            <SensorRow
+              key={sensor.name ?? index}
+              sensor={sensor}
+              last={index === sensors.length - 1}
+            />
+          ))}
+        </Box>
+      </Box>
+    </Box>
   );
 }
 

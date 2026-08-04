@@ -1,21 +1,58 @@
+/* Self-hosted, latin subsets only — Inter Variable replaces the four Helvetica
+   TTFs, and JetBrains Mono is the monospace role for readings, IDs and key caps.
+   Declared by hand rather than importing @fontsource's index.css, which pulls in
+   cyrillic, greek and vietnamese for an app that ships none of them. */
+
 @font-face {
-  font-family: 'Helvetica';
-  src: url('./fonts/Helvetica.ttf') format('truetype');
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('@fontsource-variable/inter/files/inter-latin-wght-normal.woff2')
+    format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
+
+/* latin-ext is deliberately not shipped: it is another 85KB, and everything the
+   app renders lives in Latin-1. Anything outside it falls back to system-ui. */
+
 @font-face {
-  font-family: 'Helvetica-BoldOblique';
-  src: url('./fonts/Helvetica-BoldOblique.ttf') format('truetype');
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2') format('woff2');
 }
+
 @font-face {
-  font-family: 'Helvetica-Bold';
-  src: url('./fonts/Helvetica-Bold.ttf') format('truetype');
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url('@fontsource/jetbrains-mono/files/jetbrains-mono-latin-500-normal.woff2') format('woff2');
 }
-@font-face {
-  font-family: 'Helvetica-Oblique';
-  src: url('./fonts/Helvetica-Oblique.ttf') format('truetype');
+
+:root {
+  /* the theme's own ground, so the page never flashes white before React mounts */
+  background-color: #0f1119;
+}
+
+html,
+body,
+#root {
+  height: 100%;
 }
 
 body {
-  font-family: 'Helvetica', sans-serif;
-  font-weight: bold;
+  margin: 0;
+}
+
+/* Readings, IDs and key caps only. */
+.mono {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }

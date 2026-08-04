@@ -1,14 +1,13 @@
+import Meta from '@/components/Meta';
 import Item from '@/components/User/Login';
-import { FullSizeCenteredFlexBox } from '@/components/styled';
 
-function Chat() {
+function Login() {
   return (
     <>
-      <FullSizeCenteredFlexBox>
-        <Item />
-      </FullSizeCenteredFlexBox>
+      <Meta title="Sign in" />
+      <Item />
     </>
   );
 }
 
-export default Chat;
+export default Login;

@@ -1,13 +1,25 @@
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 
+import { ArrowCounterClockwise, CloudWarning } from '@phosphor-icons/react';
+
+import ErrorScreen from '@/components/ErrorScreen';
 import { messages } from '@/config';
+import resetApp from '@/utils/reset-app';
 
 function LoaderErrorBoundaryFallback() {
   return (
-    <Box>
-      <Typography variant="h5">{messages.loader.fail}</Typography>
-    </Box>
+    <ErrorScreen
+      icon={CloudWarning}
+      severity="warning"
+      title={messages.loader.fail}
+      body={messages.loader.body}
+      code="chunk-load-failed"
+      actions={
+        <Button color="primary" startIcon={<ArrowCounterClockwise size={16} />} onClick={resetApp}>
+          Retry
+        </Button>
+      }
+    />
   );
 }
 
