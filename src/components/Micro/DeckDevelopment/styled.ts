@@ -8,6 +8,9 @@ import { FlexBox } from '@/components/styled';
 
 import { workbench } from './utils';
 
+/** The band the timeline occupies; its rows scroll inside it. */
+const TIMELINE_BAND = 'clamp(200px, 34%, 340px)';
+
 /**
  * The body: Layers | Stage | Inspector, with the timeline spanning the stage and
  * inspector beneath. Under 900px the columns stack and the inspector becomes a
@@ -22,7 +25,10 @@ const Workbench = styled(Box)(({ theme }) => ({
   height: '100%',
   minHeight: 0,
   maxHeight: '100%',
-  gridTemplateRows: 'minmax(0, 1fr) auto',
+  // The timeline holds a band of its own rather than hugging its content: a
+  // content-sized row left dead space under the last track whenever the
+  // document was small.
+  gridTemplateRows: `minmax(0, 1fr) ${TIMELINE_BAND}`,
   gridTemplateAreas: `
     "layers stage inspector"
     "layers timeline timeline"
@@ -45,9 +51,6 @@ const Workbench = styled(Box)(({ theme }) => ({
     `,
   },
 }));
-
-/** How much of the workbench the timeline may take before its rows scroll. */
-const TIMELINE_MAX = 'min(320px, 46%)';
 
 /** Each column scrolls on its own, so scrubbing never moves the other two. */
 const Panel = styled(Box)(({ theme }) => ({
@@ -345,7 +348,7 @@ const NumberField = styled('input')(({ theme }) => ({
 }));
 
 export {
-  TIMELINE_MAX,
+  TIMELINE_BAND,
   BipolarSlider,
   Chip,
   Group,

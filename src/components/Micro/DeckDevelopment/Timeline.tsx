@@ -28,7 +28,7 @@ import {
   trackProperties,
 } from './model';
 import type { Action } from './reducer';
-import { Chip, Readout, TIMELINE_MAX } from './styled';
+import { Chip, Readout } from './styled';
 import type { Layer, WorkbenchState } from './types';
 import { speedSteps, timecode, workbench } from './utils';
 
@@ -231,8 +231,8 @@ function Timeline({ state, dispatch, onCopy, copied, compact }: TimelineProps) {
         flexDirection: 'column',
         minWidth: 0,
         minHeight: 0,
-        maxHeight: TIMELINE_MAX,
-        [theme.breakpoints.down('md')]: { maxHeight: 'none' },
+        // fills the band the workbench grid hands it
+        height: '100%',
         backgroundColor: workbench(theme).panel,
         borderTop: `1px solid ${theme.shell.border.subtle}`,
       })}
@@ -383,6 +383,9 @@ function Timeline({ state, dispatch, onCopy, copied, compact }: TimelineProps) {
           sx={{
             display: 'grid',
             gridTemplateColumns: `${GUTTER}px 1fr`,
+            // one row that stretches to the band when the document is small and
+            // grows past it when there are more tracks than fit
+            gridTemplateRows: 'minmax(min-content, 1fr)',
             minWidth: 0,
             minHeight: 0,
             flex: 1,
@@ -461,7 +464,9 @@ function Timeline({ state, dispatch, onCopy, copied, compact }: TimelineProps) {
             sx={{
               position: 'relative',
               minWidth: 0,
-              height: bodyHeight,
+              // a minimum, not a fixed height: below the last track the surface
+              // keeps its gridlines and stays clickable to the bottom of the band
+              minHeight: bodyHeight,
               touchAction: 'none',
               userSelect: 'none',
             }}
