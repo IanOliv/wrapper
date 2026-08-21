@@ -1,3 +1,5 @@
+import type { CSSObject, Theme } from '@mui/material/styles';
+
 /** One numeric control: the value plus the bounds its slider is drawn from. */
 interface Attribute {
   value: number;
@@ -33,6 +35,12 @@ interface SelectOption {
   label: string;
 }
 
+/** One entry in the animation catalogue: what the select shows, and what it runs. */
+interface DeckAnimation extends SelectOption {
+  /** a function of the theme so an animation may reach for the palette */
+  keyframes: (theme: Theme) => CSSObject;
+}
+
 /** One of the five spawn actions — a named point in the position field. */
 interface SpawnPoint {
   label: string;
@@ -63,6 +71,7 @@ export type {
   Attribute,
   AttributeName,
   CardDetails,
+  DeckAnimation,
   DeckAttributes,
   SelectOption,
   SpawnPoint,

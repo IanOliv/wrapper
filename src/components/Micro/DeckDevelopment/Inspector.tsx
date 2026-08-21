@@ -9,17 +9,10 @@ import { ArrowSquareDown, CaretDown, SlidersHorizontal } from '@phosphor-icons/r
 import { FlexBox } from '@/components/styled';
 
 import SliderRow from './SliderRow';
+import { animationOptions } from './animations';
 import { GroupLabel, InspectorGroup, InspectorPanel, Readout } from './styled';
 import type { AttributeName, DeckAttributes } from './types';
-import {
-  animationOptions,
-  dropPosition,
-  easingOptions,
-  format,
-  seconds,
-  spawnPoints,
-  workbench,
-} from './utils';
+import { dropPosition, easingOptions, format, seconds, spawnPoints, workbench } from './utils';
 
 interface InspectorProps {
   attributes: DeckAttributes;

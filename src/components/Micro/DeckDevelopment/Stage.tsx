@@ -16,6 +16,7 @@ import {
 import { FlexBox } from '@/components/styled';
 
 import Card from './Card';
+import { spatialAnimations } from './animations';
 import {
   OriginLeader,
   Readout,
@@ -160,7 +161,16 @@ function Stage({
             zIndex: 1,
           }}
         >
-          <Box ref={index === 0 ? cardRef : undefined} sx={{ position: 'relative', width: '100%' }}>
+          <Box
+            ref={index === 0 ? cardRef : undefined}
+            sx={{
+              position: 'relative',
+              width: '100%',
+              // Flip and Sway turn the card in depth; without a perspective on
+              // the parent they read as a flat horizontal squeeze.
+              perspective: spatialAnimations.includes(animation) ? '900px' : undefined,
+            }}
+          >
             {/* Only the anchor card carries the leader lines and the readout —
                 they describe the position, and there is one position. */}
             {index === 0 && (

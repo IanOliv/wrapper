@@ -27,12 +27,6 @@ const spawnPoints: SpawnPoint[] = [
 /** The fifth: "Drop to position", the one that gets the full-width button. */
 const dropPosition: SpawnPoint = { label: 'Drop to position', positionH: -2, positionV: -6 };
 
-const animationOptions: SelectOption[] = [
-  { value: '', label: 'None' },
-  { value: 'breathing', label: 'Breathing' },
-  { value: 'ambiant', label: 'Ambient' },
-];
-
 const easingOptions: SelectOption[] = [
   { value: 'ease-out', label: 'Ease out' },
   { value: 'ease-in', label: 'Ease in' },
@@ -88,7 +82,6 @@ const clamp = (value: number, min: number, max: number) => Math.min(max, Math.ma
 const snap = (value: number, step: number) => Math.round(value / step) * step;
 
 export {
-  animationOptions,
   clamp,
   defaultAttributes,
   dropPosition,

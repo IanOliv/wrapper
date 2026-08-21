@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import Box from '@mui/material/Box';
 
+import { keyframesFor } from './animations';
 import { Readout, StageCard } from './styled';
 import type { CardDetails } from './types';
 import { workbench } from './utils';
@@ -28,24 +29,16 @@ function Card({ index, details, animation, easing, duration, playhead, playing }
 
   return (
     <StageCard
-      sx={{
+      sx={(theme) => ({
         // The animation lives on the card itself; position and scale are the
         // wrapper's job, so the two never fight over `transform`.
-        '@keyframes deck-breathing': {
-          '0%': { transform: 'scale(.9)' },
-          '15%': { transform: 'scale(1)' },
-          '100%': { transform: 'scale(.9)' },
-        },
-        '@keyframes deck-ambiant': {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-8px)' },
-        },
+        ...keyframesFor(theme),
         animation: animation ? `deck-${animation} ${duration}s ${easing} infinite` : 'none',
         // one delay for both jobs: scrubbing seeks, playing tracks elapsed time
         animationDelay: `-${playhead}s`,
         animationPlayState: playing ? 'running' : 'paused',
         '@media (prefers-reduced-motion: reduce)': { animation: 'none' },
-      }}
+      })}
     >
       <Box
         sx={(theme) => ({
