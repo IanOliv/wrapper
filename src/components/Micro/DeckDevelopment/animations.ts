@@ -1,146 +1,141 @@
-import type { CSSObject, Theme } from '@mui/material/styles';
-
-import type { DeckAnimation, SelectOption } from './types';
+import type { AnimationPreset, SelectOption } from './types';
 
 /**
- * Every animation the workbench offers, each one its own keyframes.
+ * The animation catalogue, expressed as keys on one property rather than as CSS
+ * keyframes. Choosing one writes real keys onto the selection, so everything the
+ * select offers is then editable on the timeline like anything else — which is
+ * the whole point of a workbench over a fixed dropdown of canned effects.
  *
- * Two rules hold for all of them, because the timeline loops and can be
- * scrubbed to any point:
- *
- * 1. `0%` and `100%` describe the same pose, so an infinite run never jumps.
- * 2. Only `transform`, `opacity` and `box-shadow` are touched — the card's
- *    position and scale belong to its wrapper, and the two must not fight over
- *    the same property.
+ * Stops are normalised 0..1 and scaled to the document duration when applied.
+ * Every one opens and closes on the same value, so a looping run never jumps.
  */
-const deckAnimations: DeckAnimation[] = [
-  {
-    value: '',
-    label: 'None',
-    keyframes: () => ({}),
-  },
+const animationPresets: AnimationPreset[] = [
   {
     value: 'breathing',
     label: 'Breathing',
-    keyframes: () => ({
-      '0%': { transform: 'scale(.9)' },
-      '15%': { transform: 'scale(1)' },
-      '100%': { transform: 'scale(.9)' },
-    }),
+    property: 'scale',
+    stops: [
+      { at: 0, value: 0.9 },
+      { at: 0.15, value: 1 },
+      { at: 1, value: 0.9 },
+    ],
   },
   {
-    value: 'ambiant',
+    value: 'ambient',
     label: 'Ambient',
-    keyframes: () => ({
-      '0%, 100%': { transform: 'translateY(0)' },
-      '50%': { transform: 'translateY(-8px)' },
-    }),
+    property: 'position',
+    stops: [
+      { at: 0, value: { x: 0, y: 0 } },
+      { at: 0.5, value: { x: 0, y: -6 } },
+      { at: 1, value: { x: 0, y: 0 } },
+    ],
   },
   {
     value: 'flip',
     label: 'Flip',
-    keyframes: () => ({
-      '0%': { transform: 'rotateY(0deg)' },
-      '100%': { transform: 'rotateY(360deg)' },
-    }),
+    property: 'rotate',
+    stops: [
+      { at: 0, value: { x: 0, y: 0, z: 0 } },
+      { at: 1, value: { x: 0, y: 360, z: 0 } },
+    ],
   },
   {
     value: 'sway',
     label: 'Sway',
-    keyframes: () => ({
-      '0%, 100%': { transform: 'rotateY(0deg)' },
-      '25%': { transform: 'rotateY(-18deg)' },
-      '75%': { transform: 'rotateY(18deg)' },
-    }),
+    property: 'rotate',
+    stops: [
+      { at: 0, value: { x: 0, y: 0, z: 0 } },
+      { at: 0.25, value: { x: 0, y: -18, z: 0 } },
+      { at: 0.75, value: { x: 0, y: 18, z: 0 } },
+      { at: 1, value: { x: 0, y: 0, z: 0 } },
+    ],
   },
   {
     value: 'tilt',
     label: 'Tilt',
-    keyframes: () => ({
-      '0%, 100%': { transform: 'rotate(0deg)' },
-      '25%': { transform: 'rotate(-4deg)' },
-      '75%': { transform: 'rotate(4deg)' },
-    }),
+    property: 'rotate',
+    stops: [
+      { at: 0, value: { x: 0, y: 0, z: 0 } },
+      { at: 0.25, value: { x: 0, y: 0, z: -4 } },
+      { at: 0.75, value: { x: 0, y: 0, z: 4 } },
+      { at: 1, value: { x: 0, y: 0, z: 0 } },
+    ],
   },
   {
     value: 'wobble',
     label: 'Wobble',
-    keyframes: () => ({
-      '0%, 100%': { transform: 'translateX(0)' },
-      '15%': { transform: 'translateX(-8px)' },
-      '30%': { transform: 'translateX(6px)' },
-      '45%': { transform: 'translateX(-4px)' },
-      '60%': { transform: 'translateX(2px)' },
-      '75%': { transform: 'translateX(-1px)' },
-    }),
+    property: 'position',
+    stops: [
+      { at: 0, value: { x: 0, y: 0 } },
+      { at: 0.15, value: { x: -5, y: 0 } },
+      { at: 0.3, value: { x: 4, y: 0 } },
+      { at: 0.45, value: { x: -2.5, y: 0 } },
+      { at: 0.6, value: { x: 1.5, y: 0 } },
+      { at: 1, value: { x: 0, y: 0 } },
+    ],
   },
   {
     value: 'pop',
     label: 'Pop',
-    keyframes: () => ({
-      '0%, 100%': { transform: 'scale(1)' },
-      '20%': { transform: 'scale(.94)' },
-      '45%': { transform: 'scale(1.12)' },
-      '70%': { transform: 'scale(.98)' },
-    }),
+    property: 'scale',
+    stops: [
+      { at: 0, value: 0.5 },
+      { at: 0.2, value: 0.46 },
+      { at: 0.45, value: 0.62 },
+      { at: 0.7, value: 0.48 },
+      { at: 1, value: 0.5 },
+    ],
   },
   {
     value: 'drift',
     label: 'Drift',
-    keyframes: () => ({
-      '0%, 100%': { transform: 'translate(0, 0)' },
-      '33%': { transform: 'translate(10px, -6px)' },
-      '66%': { transform: 'translate(-8px, 4px)' },
-    }),
+    property: 'position',
+    stops: [
+      { at: 0, value: { x: 0, y: 0 } },
+      { at: 0.33, value: { x: 7, y: -4 } },
+      { at: 0.66, value: { x: -5, y: 3 } },
+      { at: 1, value: { x: 0, y: 0 } },
+    ],
   },
   {
     value: 'fade',
     label: 'Fade',
-    keyframes: () => ({
-      '0%, 100%': { opacity: 1 },
-      '50%': { opacity: 0.35 },
-    }),
-  },
-  {
-    // The one that needs the palette: it restates the card's own elevation so
-    // the bloom replaces the hairline rather than sitting on top of it.
-    value: 'glow',
-    label: 'Glow',
-    keyframes: (theme) => {
-      const edge = `0 0 0 1px ${theme.shell.border.card}`;
-      const drop =
-        theme.palette.mode === 'dark'
-          ? '0 18px 46px rgba(0,0,0,.55)'
-          : '0 18px 46px rgba(26,28,36,.14)';
-
-      return {
-        '0%, 100%': { boxShadow: `${edge}, ${drop}` },
-        '50%': {
-          boxShadow: `0 0 0 1px ${theme.palette.primary.main}, 0 0 22px 2px ${theme.shell.tint}, ${drop}`,
-        },
-      };
-    },
+    property: 'opacity',
+    stops: [
+      { at: 0, value: 1 },
+      { at: 0.5, value: 0.35 },
+      { at: 1, value: 1 },
+    ],
   },
 ];
 
-/** What the inspector's Animation select is built from. */
-const animationOptions: SelectOption[] = deckAnimations.map(({ value, label }) => ({
-  value,
-  label,
-}));
-
-/** Any animation that turns the card in 3D wants a perspective on its wrapper. */
-const spatialAnimations = ['flip', 'sway'];
+const animationOptions: SelectOption[] = [
+  { value: '', label: 'None' },
+  ...animationPresets.map(({ value, label }) => ({ value, label })),
+];
 
 /**
- * Every animation's keyframes at once, named `deck-<value>`, so the card can
- * switch between them without remounting and the browser keeps them warm.
+ * The pill chips under the layers list. A preset is a whole timeline rather than
+ * one property, so each names the animations it lays down together.
  */
-const keyframesFor = (theme: Theme): CSSObject =>
-  deckAnimations.reduce<CSSObject>((styles, { value, keyframes }) => {
-    if (!value) return styles;
+interface LayerPreset {
+  value: string;
+  label: string;
+  /** applied in order; later entries land on later properties */
+  parts: string[];
+  /** presets that read as a deal want the cards walked apart in time */
+  stagger: number;
+}
 
-    return { ...styles, [`@keyframes deck-${value}`]: keyframes(theme) };
-  }, {});
+const layerPresets: LayerPreset[] = [
+  { value: 'deal', label: 'Deal', parts: ['drift', 'fade'], stagger: 0.08 },
+  { value: 'flip-in', label: 'Flip in', parts: ['flip', 'fade'], stagger: 0.06 },
+  { value: 'fan-out', label: 'Fan out', parts: ['drift', 'tilt'], stagger: 0.05 },
+  { value: 'shuffle', label: 'Shuffle', parts: ['wobble', 'tilt'], stagger: 0.03 },
+];
 
-export { animationOptions, deckAnimations, keyframesFor, spatialAnimations };
+/** Any animation that turns the card in depth wants the stage's perspective. */
+const spatialAnimations = ['flip', 'sway'];
+
+export type { LayerPreset };
+export { animationOptions, animationPresets, layerPresets, spatialAnimations };

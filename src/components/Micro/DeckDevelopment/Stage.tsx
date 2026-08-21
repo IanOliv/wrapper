@@ -6,233 +6,228 @@ import Tooltip from '@mui/material/Tooltip';
 import {
   ArrowCounterClockwise,
   Crosshair,
+  Cube,
   GridNine,
   Minus,
+  Path,
   Pause,
   Play,
   Plus,
+  Stack,
 } from '@phosphor-icons/react';
 
 import { FlexBox } from '@/components/styled';
 
 import Card from './Card';
-import { spatialAnimations } from './animations';
+import MotionPath from './MotionPath';
+import { cardLayers, isVisible, poseAt } from './model';
+import type { Action } from './reducer';
 import {
+  Chip,
   OriginLeader,
   Readout,
-  StageControl,
   StageGround,
-  StageToolbar,
+  StageRow,
   Stepper,
   StepperButton,
-  TimelineBar,
-  TimelineSlider,
 } from './styled';
-import type { CardDetails, DeckAttributes } from './types';
-import { fanPositions, format, seconds, workbench, zoomSteps } from './utils';
+import type { WorkbenchState } from './types';
+import { format, zoomSteps } from './utils';
 
 interface StageProps {
-  attributes: DeckAttributes;
-  animation: string;
-  easing: string;
-  details: CardDetails;
-  zoom: number;
-  grid: boolean;
-  playing: boolean;
-  playhead: number;
+  state: WorkbenchState;
+  dispatch: (action: Action) => void;
   stageRef: RefObject<HTMLDivElement>;
-  cardRef: RefObject<HTMLDivElement>;
-  onZoom: (zoom: number) => void;
-  onToggleGrid: () => void;
   onCenter: () => void;
-  onTogglePlay: () => void;
-  onReset: () => void;
-  onScrub: (playhead: number) => void;
 }
 
+/** The frames the onion skin ghosts, either side of the playhead. */
+const ONION_OFFSETS = [-2, -1, 1, 2].map((step) => step * 0.08);
+
 /**
- * The left column. The card gets the room; every control that lives here is a
- * 28px chip floating over the ground, so nothing competes with what is on stage.
+ * The centre column. The card gets the room; every control here is a 28px chip
+ * in one of the two in-flow rows, so a narrow stage reflows them instead of
+ * letting them float over the card.
  */
-function Stage({
-  attributes,
-  animation,
-  easing,
-  details,
-  zoom,
-  grid,
-  playing,
-  playhead,
-  stageRef,
-  cardRef,
-  onZoom,
-  onToggleGrid,
-  onCenter,
-  onTogglePlay,
-  onReset,
-  onScrub,
-}: StageProps) {
-  const { scale, duration, positionH, positionV } = attributes;
-  const cards = fanPositions(attributes);
-  const zoomIndex = zoomSteps.indexOf(zoom);
+function Stage({ state, dispatch, stageRef, onCenter }: StageProps) {
+  const { doc, selection, view } = state;
+  const zoomIndex = zoomSteps.indexOf(view.zoom);
+  const cards = cardLayers(doc);
+  const anchor = cards.find((layer) => selection.layerIds.includes(layer.id)) ?? cards[0];
+  const anchorPose = anchor ? poseAt(doc, anchor, doc.playhead, cards.indexOf(anchor)) : undefined;
 
   return (
-    <StageGround grid={grid} ref={stageRef}>
-      <StageToolbar sx={{ left: 16 }}>
-        <Stepper>
-          <StepperButton
-            aria-label="Zoom out"
-            disabled={zoomIndex <= 0}
-            onClick={() => onZoom(zoomSteps[Math.max(0, zoomIndex - 1)])}
+    <StageGround grid={view.grid}>
+      {/* 1 — toolbar row, in flow */}
+      <StageRow sx={{ justifyContent: 'space-between', padding: '14px 16px 0' }}>
+        <StageRow>
+          <Stepper>
+            <StepperButton
+              aria-label="Zoom out"
+              disabled={zoomIndex <= 0}
+              onClick={() =>
+                dispatch({ type: 'set-zoom', value: zoomSteps[Math.max(0, zoomIndex - 1)] })
+              }
+            >
+              <Minus size={14} />
+            </StepperButton>
+            <Readout sx={{ px: 1.25, color: 'text.secondary' }}>{view.zoom}%</Readout>
+            <StepperButton
+              aria-label="Zoom in"
+              disabled={zoomIndex >= zoomSteps.length - 1}
+              onClick={() =>
+                dispatch({
+                  type: 'set-zoom',
+                  value: zoomSteps[Math.min(zoomSteps.length - 1, zoomIndex + 1)],
+                })
+              }
+            >
+              <Plus size={14} />
+            </StepperButton>
+          </Stepper>
+
+          <Chip onClick={onCenter}>
+            <Crosshair size={14} />
+            Center
+          </Chip>
+
+          <Chip
+            onClick={() => dispatch({ type: 'toggle-view', field: 'grid' })}
+            className={view.grid ? 'active' : undefined}
+            aria-pressed={view.grid}
           >
-            <Minus size={14} />
-          </StepperButton>
-          <Readout sx={{ px: 1.25, color: 'text.secondary' }}>{zoom}%</Readout>
-          <StepperButton
-            aria-label="Zoom in"
-            disabled={zoomIndex >= zoomSteps.length - 1}
-            onClick={() => onZoom(zoomSteps[Math.min(zoomSteps.length - 1, zoomIndex + 1)])}
+            <GridNine size={14} weight={view.grid ? 'fill' : 'regular'} />
+            Grid
+          </Chip>
+        </StageRow>
+
+        <StageRow>
+          <Chip
+            className="accent"
+            onClick={() => dispatch({ type: 'set-playing', value: !view.playing })}
           >
-            <Plus size={14} />
-          </StepperButton>
-        </Stepper>
+            {view.playing ? <Pause size={12} weight="fill" /> : <Play size={12} weight="fill" />}
+            {view.playing ? 'Pause' : 'Play'}
+          </Chip>
 
-        <StageControl onClick={onCenter}>
-          <Crosshair size={14} />
-          Center
-        </StageControl>
+          <Tooltip title="Reset the stage" arrow>
+            <Chip
+              aria-label="Reset the stage"
+              onClick={() => dispatch({ type: 'reset-stage' })}
+              sx={{ width: 28, p: 0 }}
+            >
+              <ArrowCounterClockwise size={14} />
+            </Chip>
+          </Tooltip>
+        </StageRow>
+      </StageRow>
 
-        <StageControl
-          onClick={onToggleGrid}
-          className={grid ? 'active' : undefined}
-          aria-pressed={grid}
-        >
-          <GridNine size={14} weight={grid ? 'fill' : 'regular'} />
-          Grid
-        </StageControl>
-      </StageToolbar>
+      {/* 2 — the canvas itself */}
+      <Box
+        ref={stageRef}
+        sx={{
+          flex: 1,
+          position: 'relative',
+          minHeight: 262,
+          margin: '14px 0',
+          perspective: view.three ? `${doc.perspective}px` : undefined,
+        }}
+      >
+        {/* Ghost frames read as where the card was and where it is going. */}
+        {view.onionSkin &&
+          ONION_OFFSETS.map((offset) =>
+            cards
+              .filter((layer) => isVisible(doc, layer))
+              .map((layer, index) => (
+                <Card
+                  key={`${layer.id}${offset}`}
+                  ghost
+                  index={index}
+                  name={layer.name}
+                  pose={poseAt(doc, layer, doc.playhead + offset, index)}
+                  zoom={view.zoom}
+                  three={view.three}
+                />
+              )),
+          )}
 
-      <StageToolbar sx={{ right: 16 }}>
-        <StageControl
-          onClick={onTogglePlay}
-          sx={(theme) => ({
-            backgroundColor: 'transparent',
-            borderColor: theme.palette.primary.main,
-            color: theme.palette.primary.main,
-            padding: '0 11px',
-            gap: '7px',
-            '&:hover': {
-              borderColor: theme.palette.primary.dark,
-              color: theme.palette.primary.dark,
-              backgroundColor: theme.shell.tint,
-            },
-          })}
-        >
-          {playing ? <Pause size={12} weight="fill" /> : <Play size={12} weight="fill" />}
-          {playing ? 'Pause' : 'Play'}
-        </StageControl>
+        {cards
+          .filter((layer) => isVisible(doc, layer))
+          .map((layer, index) => (
+            <Card
+              key={layer.id}
+              index={index}
+              name={layer.name}
+              pose={poseAt(doc, layer, doc.playhead, index)}
+              zoom={view.zoom}
+              three={view.three}
+            />
+          ))}
 
-        <Tooltip title="Reset the stage" arrow>
-          <StageControl aria-label="Reset the stage" onClick={onReset} sx={{ width: 28, p: 0 }}>
-            <ArrowCounterClockwise size={14} />
-          </StageControl>
-        </Tooltip>
-      </StageToolbar>
-
-      {/* The cards. Anchored top-left in a percentage field, so the spawn
-          points mean the same thing they mean on the existing deck page. */}
-      {cards.map((position, index) => (
-        <Box
-          key={index}
-          sx={{
-            position: 'absolute',
-            left: `${position.left}%`,
-            top: `${position.top}%`,
-            // 172px so the readout below and the leader lines stay pinned to the
-            // card's own edges rather than to the widest thing in the stack
-            width: 172,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            transform: `scale(${(scale.value * zoom) / 100})`,
-            transformOrigin: 'top left',
-            transition: (theme) =>
-              `left ${theme.shell.motion.duration.state}ms ${theme.shell.motion.easing.state}, top ${theme.shell.motion.duration.state}ms ${theme.shell.motion.easing.state}, transform ${theme.shell.motion.duration.state}ms ${theme.shell.motion.easing.state}`,
-            zIndex: 1,
-          }}
-        >
+        {/* The leader lines and readout describe the anchor's position, and
+            there is one anchor. */}
+        {anchor && anchorPose && (
           <Box
-            ref={index === 0 ? cardRef : undefined}
             sx={{
-              position: 'relative',
-              width: '100%',
-              // Flip and Sway turn the card in depth; without a perspective on
-              // the parent they read as a flat horizontal squeeze.
-              perspective: spatialAnimations.includes(animation) ? '900px' : undefined,
+              position: 'absolute',
+              left: `${anchorPose.position.x}%`,
+              top: `${anchorPose.position.y}%`,
+              width: 172,
+              transform: `scale(${(anchorPose.scale * view.zoom) / 100})`,
+              transformOrigin: 'top left',
+              pointerEvents: 'none',
+              zIndex: 2,
             }}
           >
-            {/* Only the anchor card carries the leader lines and the readout —
-                they describe the position, and there is one position. */}
-            {index === 0 && (
-              <>
-                <OriginLeader axis="h" />
-                <OriginLeader axis="v" />
-              </>
-            )}
-
-            <Card
-              index={index}
-              details={details}
-              animation={animation}
-              easing={easing}
-              duration={duration.value}
-              playhead={playhead}
-              playing={playing}
-            />
+            <Box sx={{ position: 'relative', height: 0 }}>
+              <OriginLeader axis="h" />
+              <OriginLeader axis="v" />
+            </Box>
           </Box>
+        )}
 
-          {index === 0 && (
-            <FlexBox sx={{ gap: 1.25, justifyContent: 'center', mt: 1.75 }}>
-              <Readout>x {format(positionH.value)}</Readout>
-              <Readout sx={(theme) => ({ color: theme.shell.border.card })}>|</Readout>
-              <Readout>y {format(positionV.value)}</Readout>
-              <Readout sx={(theme) => ({ color: theme.shell.border.card })}>|</Readout>
-              <Readout>scale {format(scale.value, 2)}</Readout>
-            </FlexBox>
-          )}
-        </Box>
-      ))}
+        {view.motionPath && <MotionPath state={state} dispatch={dispatch} />}
+      </Box>
 
-      {/* A motion playground needs scrubbing, so `duration` is a timeline
-          rather than a slider adrift in a column of other sliders. */}
-      <TimelineBar>
-        <Box
-          component="span"
-          sx={(theme) => ({
-            fontSize: 11,
-            fontWeight: 500,
-            letterSpacing: '.12em',
-            textTransform: 'uppercase',
-            color: workbench(theme).muted,
-            whiteSpace: 'nowrap',
-          })}
+      {anchorPose && (
+        <FlexBox sx={{ gap: 1.25, justifyContent: 'center', flexShrink: 0, pb: 1 }}>
+          <Readout>x {format(anchorPose.position.x)}</Readout>
+          <Readout sx={(theme) => ({ color: theme.shell.border.card })}>|</Readout>
+          <Readout>y {format(anchorPose.position.y)}</Readout>
+          <Readout sx={(theme) => ({ color: theme.shell.border.card })}>|</Readout>
+          <Readout>scale {format(anchorPose.scale, 2)}</Readout>
+        </FlexBox>
+      )}
+
+      {/* 3 — toggle row, in flow */}
+      <StageRow sx={{ padding: '0 16px 14px' }}>
+        <Chip
+          onClick={() => dispatch({ type: 'toggle-view', field: 'motionPath' })}
+          className={view.motionPath ? 'active' : undefined}
+          aria-pressed={view.motionPath}
         >
-          Timeline
-        </Box>
-        <TimelineSlider
-          size="small"
-          aria-label="Timeline"
-          value={Math.min(playhead, duration.value)}
-          min={0}
-          max={duration.value || 1}
-          step={(duration.value || 1) / 100}
-          disabled={!duration.value}
-          onChange={(_, next) => onScrub(next as number)}
-        />
-        <Readout sx={{ color: 'text.secondary' }}>
-          {format(Math.min(playhead, duration.value), 2)} / {seconds(duration.value)}
-        </Readout>
-      </TimelineBar>
+          <Path size={14} weight={view.motionPath ? 'fill' : 'regular'} />
+          Motion path
+        </Chip>
+
+        <Chip
+          onClick={() => dispatch({ type: 'toggle-view', field: 'three' })}
+          className={view.three ? 'active' : undefined}
+          aria-pressed={view.three}
+        >
+          <Cube size={14} weight={view.three ? 'fill' : 'regular'} />
+          3D
+        </Chip>
+
+        <Chip
+          onClick={() => dispatch({ type: 'toggle-view', field: 'onionSkin' })}
+          className={view.onionSkin ? 'active' : undefined}
+          aria-pressed={view.onionSkin}
+        >
+          <Stack size={14} weight={view.onionSkin ? 'fill' : 'regular'} />
+          Onion skin
+        </Chip>
+      </StageRow>
     </StageGround>
   );
 }

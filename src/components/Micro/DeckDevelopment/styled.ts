@@ -9,20 +9,59 @@ import { FlexBox } from '@/components/styled';
 import { workbench } from './utils';
 
 /**
- * The body: stage and inspector, `1fr / 296px`. Under 900px the inspector
- * stops being a column and becomes a bottom sheet — see `InspectorPanel`.
+ * The body: Layers | Stage | Inspector, with the timeline spanning the stage and
+ * inspector beneath. Under 900px the columns stack and the inspector becomes a
+ * bottom sheet.
  */
 const Workbench = styled(Box)(({ theme }) => ({
   display: 'grid',
-  gridTemplateColumns: '1fr 296px',
-  minHeight: 468,
+  gridTemplateColumns: '168px 1fr 296px',
+  gridTemplateRows: 'minmax(424px, 1fr) auto',
+  gridTemplateAreas: `
+    "layers stage inspector"
+    "layers timeline timeline"
+  `,
   borderRadius: theme.shape.borderRadius,
   border: `1px solid ${theme.shell.border.subtle}`,
   overflow: 'hidden',
   [theme.breakpoints.down('md')]: {
     gridTemplateColumns: '1fr',
-    gridTemplateRows: '1fr 60vh',
+    gridTemplateRows: 'auto minmax(320px, 1fr) auto 60vh',
+    gridTemplateAreas: `
+      "layers"
+      "stage"
+      "timeline"
+      "inspector"
+    `,
   },
+}));
+
+/** Each column scrolls on its own, so scrubbing never moves the other two. */
+const Panel = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  minHeight: 0,
+  minWidth: 0,
+  overflowY: 'auto',
+  backgroundColor: workbench(theme).panel,
+}));
+
+const PanelHeader = styled(FlexBox)(({ theme }) => ({
+  alignItems: 'center',
+  gap: 8,
+  padding: '13px 16px',
+  borderBottom: `1px solid ${theme.shell.border.subtle}`,
+  position: 'sticky',
+  top: 0,
+  zIndex: 3,
+  backgroundColor: workbench(theme).panel,
+}));
+
+const PanelTitle = styled('span')(({ theme }) => ({
+  fontSize: 13,
+  fontWeight: 500,
+  color: theme.palette.text.primary,
+  whiteSpace: 'nowrap',
 }));
 
 /**
@@ -32,24 +71,28 @@ const Workbench = styled(Box)(({ theme }) => ({
 const StageGround = styled(Box, {
   shouldForwardProp: (prop) => prop !== 'grid',
 })<{ grid: boolean }>(({ theme, grid }) => ({
-  position: 'relative',
-  minHeight: 320,
-  overflow: 'hidden',
+  gridArea: 'stage',
+  display: 'flex',
+  flexDirection: 'column',
+  minHeight: 424,
+  minWidth: 0,
+  overflow: 'auto',
   backgroundColor: theme.palette.background.default,
   backgroundImage: grid ? `radial-gradient(${workbench(theme).dot} 1px, transparent 1px)` : 'none',
   backgroundSize: '18px 18px',
+  [theme.breakpoints.down('md')]: { minHeight: 320 },
 }));
 
-const StageToolbar = styled(FlexBox)({
-  position: 'absolute',
-  top: 14,
-  gap: 8,
+/** Toolbar and toggle rows are in flow, so a narrow stage reflows them. */
+const StageRow = styled(FlexBox)({
   alignItems: 'center',
-  zIndex: 2,
+  gap: 8,
+  flexWrap: 'wrap',
+  flexShrink: 0,
 });
 
-/** The 28px controls that float over the stage: chips, steppers, icon buttons. */
-const StageControl = styled(ButtonBase)(({ theme }) => ({
+/** Every fixed-height chip, select and button label keeps its line. */
+const Chip = styled(ButtonBase)(({ theme }) => ({
   height: 28,
   display: 'flex',
   alignItems: 'center',
@@ -63,9 +106,19 @@ const StageControl = styled(ButtonBase)(({ theme }) => ({
   fontWeight: 500,
   lineHeight: 1,
   whiteSpace: 'nowrap',
+  flexShrink: 0,
   transition: `color ${theme.shell.motion.duration.state}ms ${theme.shell.motion.easing.state}, border-color ${theme.shell.motion.duration.state}ms ${theme.shell.motion.easing.state}`,
   '&:hover': { color: theme.palette.text.primary, borderColor: theme.shell.border.control },
-  '&.active': { color: theme.palette.primary.main, borderColor: theme.palette.primary.main },
+  '&.active': {
+    color: theme.palette.primary.main,
+    borderColor: theme.palette.primary.main,
+    backgroundColor: theme.shell.tint,
+  },
+  '&.accent': {
+    backgroundColor: 'transparent',
+    borderColor: theme.palette.primary.main,
+    color: theme.palette.primary.main,
+  },
 }));
 
 /** The zoom stepper's shell — its three parts share one 8px pill. */
@@ -75,6 +128,7 @@ const Stepper = styled(FlexBox)(({ theme }) => ({
   border: `1px solid ${theme.shell.border.card}`,
   borderRadius: theme.shape.borderRadius,
   overflow: 'hidden',
+  flexShrink: 0,
 }));
 
 const StepperButton = styled(ButtonBase)(({ theme }) => ({
@@ -125,7 +179,7 @@ const OriginLeader = styled('span', {
       },
 );
 
-/** Readings, IDs and coordinates. The mono role, at the stage's 11px. */
+/** Readings, IDs, coordinates and timecode. The mono role at panel size. */
 const Readout = styled('span')(({ theme }) => ({
   fontFamily: theme.shell.fontFamilyMono,
   fontSize: 11,
@@ -142,45 +196,64 @@ const GroupLabel = styled('div')(({ theme }) => ({
   letterSpacing: '.12em',
   textTransform: 'uppercase',
   color: workbench(theme).muted,
+  whiteSpace: 'nowrap',
 }));
 
-const TimelineBar = styled(FlexBox)(({ theme }) => ({
-  position: 'absolute',
-  left: 16,
-  right: 16,
-  bottom: 14,
-  height: 40,
-  alignItems: 'center',
-  gap: 12,
-  padding: '0 12px',
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: theme.shell.surface.level1,
-  border: `1px solid ${theme.shell.border.card}`,
-  zIndex: 2,
-}));
-
-const InspectorPanel = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  minHeight: 0,
-  overflowY: 'auto',
-  backgroundColor: workbench(theme).inspector,
-  borderLeft: `1px solid ${theme.shell.border.subtle}`,
-  [theme.breakpoints.down('md')]: {
-    // a bottom sheet at 60% of the viewport, same three groups, stage above
-    borderLeft: 'none',
-    borderTop: `1px solid ${theme.shell.border.subtle}`,
-    borderRadius: `${theme.shape.borderRadius * 1.75}px ${theme.shape.borderRadius * 1.75}px 0 0`,
-  },
-}));
-
-const InspectorGroup = styled(Box)(({ theme }) => ({
+const Group = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   gap: 12,
   padding: '14px 16px',
   borderBottom: `1px solid ${theme.shell.border.subtle}`,
   '&:last-of-type': { borderBottom: 'none' },
+}));
+
+/** The count chip in a panel header, and the timeline's mono tags. */
+const TagChip = styled(Readout)(({ theme }) => ({
+  fontSize: 10,
+  border: `1px solid ${theme.shell.border.card}`,
+  borderRadius: 3,
+  padding: '1px 5px',
+  flex: 'none',
+}));
+
+/** A layer row: 30px, 6px radius, accent ground when selected. */
+const LayerRow = styled(ButtonBase, {
+  shouldForwardProp: (prop) => prop !== 'selected' && prop !== 'depth',
+})<{ selected: boolean; depth: number }>(({ theme, selected, depth }) => ({
+  height: 30,
+  width: '100%',
+  display: 'flex',
+  alignItems: 'center',
+  gap: 6,
+  paddingLeft: 8 + depth * 20,
+  paddingRight: 6,
+  borderRadius: 6,
+  fontSize: 12,
+  textAlign: 'left',
+  color: selected ? theme.palette.primary.light : theme.palette.text.secondary,
+  backgroundColor: selected ? theme.shell.tint : 'transparent',
+  '&:hover': { backgroundColor: selected ? theme.shell.tint : theme.shell.surface.level1 },
+}));
+
+/** Presets: 24px pills that never wrap their label. */
+const PresetChip = styled(ButtonBase)(({ theme }) => ({
+  height: 24,
+  padding: '0 10px',
+  borderRadius: 999,
+  fontSize: 11,
+  fontWeight: 500,
+  lineHeight: 1,
+  whiteSpace: 'nowrap',
+  border: `1px solid ${theme.shell.border.card}`,
+  backgroundColor: theme.shell.surface.level1,
+  color: theme.palette.text.secondary,
+  '&:hover': { color: theme.palette.text.primary, borderColor: theme.shell.border.control },
+  '&.active': {
+    borderColor: theme.palette.primary.main,
+    color: theme.palette.primary.main,
+    backgroundColor: 'transparent',
+  },
 }));
 
 /**
@@ -209,26 +282,74 @@ const Slider = styled(MuiSlider)(({ theme }) => ({
   },
 }));
 
-/** The timeline's knob is 11px and rides bare on the bar's own ground. */
-const TimelineSlider = styled(Slider)({
+/** A bipolar slider fills from the centre, so ±0 reads as centred, not empty. */
+const BipolarSlider = styled(Slider)(({ theme }) => ({
+  '& .MuiSlider-track': { display: 'none' },
+  '& .MuiSlider-rail': {
+    opacity: 1,
+    backgroundColor: theme.shell.border.subtle,
+  },
+}));
+
+/** The segmented control behind Repeat. */
+const Segmented = styled(FlexBox)(({ theme }) => ({
+  borderRadius: theme.shape.borderRadius,
+  border: `1px solid ${theme.shell.border.control}`,
+  overflow: 'hidden',
+  backgroundColor: theme.palette.background.default,
+}));
+
+const SegmentedButton = styled(ButtonBase)(({ theme }) => ({
   flex: 1,
-  '& .MuiSlider-thumb': { width: 11, height: 11, boxShadow: 'none' },
-});
+  height: 30,
+  fontSize: 12,
+  fontWeight: 500,
+  whiteSpace: 'nowrap',
+  color: theme.palette.text.secondary,
+  '&.active': { backgroundColor: theme.shell.tint, color: theme.palette.primary.light },
+}));
+
+/** The 30px mono number fields behind Delay and Stagger. */
+const NumberField = styled('input')(({ theme }) => ({
+  height: 30,
+  width: '100%',
+  minWidth: 0,
+  boxSizing: 'border-box',
+  padding: '0 8px',
+  borderRadius: theme.shape.borderRadius,
+  border: `1px solid ${theme.shell.border.control}`,
+  backgroundColor: theme.palette.background.default,
+  color: theme.palette.text.primary,
+  fontFamily: theme.shell.fontFamilyMono,
+  fontSize: 12,
+  fontVariantNumeric: 'tabular-nums',
+  '&:focus-visible': {
+    outline: `2px solid ${theme.palette.primary.main}`,
+    outlineOffset: 2,
+  },
+}));
 
 export {
+  BipolarSlider,
+  Chip,
+  Group,
   GroupLabel,
-  InspectorGroup,
-  InspectorPanel,
+  LayerRow,
+  NumberField,
   OriginLeader,
+  Panel,
+  PanelHeader,
+  PanelTitle,
+  PresetChip,
   Readout,
+  Segmented,
+  SegmentedButton,
   Slider,
   StageCard,
-  StageControl,
   StageGround,
-  StageToolbar,
+  StageRow,
   Stepper,
   StepperButton,
-  TimelineBar,
-  TimelineSlider,
+  TagChip,
   Workbench,
 };
