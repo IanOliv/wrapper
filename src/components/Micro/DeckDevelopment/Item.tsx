@@ -11,10 +11,7 @@ import { toCss } from './codegen';
 import { clamp } from './model';
 import { initialState, reducer } from './reducer';
 import { Workbench } from './styled';
-
-/** The card's own box, which `Center` needs in order to be exact. */
-const CARD_WIDTH = 172;
-const CARD_HEIGHT = 190;
+import { cardBox } from './utils';
 
 /**
  * The deck motion workbench.
@@ -55,13 +52,16 @@ function Item() {
     let frame = 0;
     let previous = performance.now();
     let direction = 1;
+    // Held here rather than read back from the ref each frame: if React batches
+    // a render away, reading the ref would replay the same delta twice.
+    let current = playheadRef.current;
 
     const tick = (now: number) => {
       const elapsed = ((now - previous) / 1000) * speed * direction;
 
       previous = now;
 
-      let next = playheadRef.current + elapsed;
+      let next = current + elapsed;
 
       if (repeat === 'yoyo') {
         if (next >= duration) {
@@ -82,7 +82,8 @@ function Item() {
         next -= duration;
       }
 
-      dispatch({ type: 'set-playhead', value: clamp(next, 0, duration) });
+      current = clamp(next, 0, duration);
+      dispatch({ type: 'set-playhead', value: current });
       frame = requestAnimationFrame(tick);
     };
 
@@ -90,6 +91,7 @@ function Item() {
     const start = window.setTimeout(
       () => {
         previous = performance.now();
+        current = playheadRef.current;
         frame = requestAnimationFrame(tick);
       },
       playheadRef.current === 0 ? delay * 1000 : 0,
@@ -129,7 +131,6 @@ function Item() {
 
     if (!stage) return;
 
-    const scale = state.view.zoom / 100;
     const toPercent = (available: number, size: number) =>
       available > 0 ? ((available - size) / 2 / available) * 100 : 0;
 
@@ -137,11 +138,11 @@ function Item() {
       type: 'set-base',
       property: 'position',
       value: {
-        x: toPercent(stage.clientWidth, CARD_WIDTH * scale),
-        y: toPercent(stage.clientHeight, CARD_HEIGHT * scale),
+        x: toPercent(stage.clientWidth, cardBox.width),
+        y: toPercent(stage.clientHeight, cardBox.height),
       },
     });
-  }, [state.view.zoom]);
+  }, []);
 
   // The stage opens with the card centred rather than in the corner.
   const hasCentred = useRef(false);
@@ -154,8 +155,8 @@ function Item() {
   }, [centre]);
 
   const applyAnimation = (value: string) => {
+    dispatch({ type: 'apply-animation', value, previous: animation });
     setAnimation(value);
-    dispatch({ type: 'apply-animation', value });
   };
 
   const copy = async () => {

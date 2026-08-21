@@ -43,6 +43,9 @@ const triggerOptions: { value: Trigger; label: string }[] = [
 
 const speedSteps = [0.25, 0.5, 1, 2];
 
+/** The card's own box. `Center` and the origin leaders both measure from it. */
+const cardBox = { width: 172, height: 190 };
+
 /** The stepper's rungs. 100% is the honest default for a workbench. */
 const zoomSteps = [25, 50, 75, 100, 150, 200];
 
@@ -80,6 +83,7 @@ const timecode = (value: number) => {
 };
 
 export {
+  cardBox,
   dropPosition,
   format,
   ranges,

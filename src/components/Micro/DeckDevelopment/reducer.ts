@@ -6,6 +6,8 @@ import {
   clamp,
   createDocument,
   groupLayers,
+  isVec2,
+  isVec3,
   keysOf,
   makeKey,
   makeLayer,
@@ -15,6 +17,7 @@ import {
   trackProperties,
 } from './model';
 import type {
+  BaseTransform,
   Bezier,
   DeckDocument,
   Key,
@@ -46,7 +49,7 @@ type Action =
   | { type: 'delete-keys' }
   | { type: 'set-easing'; bezier: Bezier; ids?: string[] }
   | { type: 'edit-bezier'; keyId: string | null }
-  | { type: 'apply-animation'; value: string }
+  | { type: 'apply-animation'; value: string; previous?: string }
   | { type: 'apply-preset'; value: string }
   | { type: 'set-duration'; value: number }
   | { type: 'set-number'; field: 'delay' | 'stagger' | 'speed' | 'perspective'; value: number }
@@ -86,6 +89,9 @@ const targets = (state: WorkbenchState) =>
         .slice(0, 1)
         .map((layer) => layer.id);
 
+const baseFor = (doc: DeckDocument, layerId: string) =>
+  doc.layers.find((layer) => layer.id === layerId)?.base;
+
 /** Replace every key on a track, used when an animation is (re)applied. */
 const withoutTrack = (keys: Key[], trackId: string) =>
   keys.filter((key) => key.trackId !== trackId);
@@ -115,20 +121,53 @@ const writeKey = (
   return { ...doc, keys: [...doc.keys, makeKey(track.id, t, value)] };
 };
 
+/**
+ * Resolve one relative stop against the pose the layer is actually holding:
+ * offsets for the two spatial properties, factors for the two scalar ones.
+ * This is what keeps "Ambient" a hover in place rather than a jump to 0,0.
+ */
+const resolve = (property: TrackProperty, base: BaseTransform, stop: KeyValue): KeyValue => {
+  if (property === 'position' && isVec2(stop)) {
+    return { x: base.position.x + stop.x, y: base.position.y + stop.y };
+  }
+
+  if (property === 'rotate' && isVec3(stop)) {
+    return {
+      x: base.rotate.x + stop.x,
+      y: base.rotate.y + stop.y,
+      z: base.rotate.z + stop.z,
+    };
+  }
+
+  if (property === 'scale') return base.scale * (stop as number);
+
+  return base.opacity * (stop as number);
+};
+
 /** Lay an animation's stops down as real keys on one layer. */
 const applyAnimation = (doc: DeckDocument, layerId: string, value: string): DeckDocument => {
   const preset = animationPresets.find((candidate) => candidate.value === value);
   const track = preset ? trackOf(doc, layerId, preset.property) : undefined;
+  const base = baseFor(doc, layerId);
 
-  if (!preset || !track) return doc;
+  if (!preset || !track || !base) return doc;
 
-  const laid = preset.stops.map((stop) => makeKey(track.id, stop.at * doc.duration, stop.value));
+  const laid = preset.stops.map((stop) =>
+    makeKey(track.id, stop.at * doc.duration, resolve(preset.property, base, stop.value)),
+  );
 
   return { ...doc, keys: [...withoutTrack(doc.keys, track.id), ...laid] };
 };
 
-const baseFor = (doc: DeckDocument, layerId: string) =>
-  doc.layers.find((layer) => layer.id === layerId)?.base;
+/** Take back what a named animation laid down, leaving hand-made keys alone. */
+const clearAnimation = (doc: DeckDocument, layerId: string, value: string): DeckDocument => {
+  const preset = animationPresets.find((candidate) => candidate.value === value);
+  const track = preset ? trackOf(doc, layerId, preset.property) : undefined;
+
+  if (!track) return doc;
+
+  return { ...doc, keys: withoutTrack(doc.keys, track.id) };
+};
 
 function reducer(state: WorkbenchState, action: Action): WorkbenchState {
   const { doc, selection, view } = state;
@@ -180,7 +219,17 @@ function reducer(state: WorkbenchState, action: Action): WorkbenchState {
 
     case 'add-layer': {
       const group = groupLayers(doc)[0];
-      const layer = makeLayer(`Card ${cardLayers(doc).length + 1}`, doc.layers.length, group.id);
+      const cards = cardLayers(doc);
+      const layer = makeLayer(`Card ${cards.length + 1}`, doc.layers.length, group.id);
+      const previous = cards[cards.length - 1]?.base;
+
+      if (previous) {
+        layer.base = {
+          ...previous,
+          rotate: { ...previous.rotate },
+          position: { ...previous.position },
+        };
+      }
 
       return {
         ...state,
@@ -221,9 +270,25 @@ function reducer(state: WorkbenchState, action: Action): WorkbenchState {
       }
 
       const group = groupLayers(doc)[0];
-      const added = Array.from({ length: count - cards.length }, (_, index) =>
-        makeLayer(`Card ${cards.length + index + 1}`, doc.layers.length + index, group.id),
-      );
+      // New cards land where the last one sits rather than at 0,0, so raising
+      // the quantity stacks the deck instead of flinging cards into the corner.
+      const previous = cards[cards.length - 1]?.base;
+      const added = Array.from({ length: count - cards.length }, (_, index) => {
+        const layer = makeLayer(
+          `Card ${cards.length + index + 1}`,
+          doc.layers.length + index,
+          group.id,
+        );
+
+        if (previous)
+          layer.base = {
+            ...previous,
+            rotate: { ...previous.rotate },
+            position: { ...previous.position },
+          };
+
+        return layer;
+      });
 
       return {
         ...state,
@@ -306,19 +371,28 @@ function reducer(state: WorkbenchState, action: Action): WorkbenchState {
     /** The old "set left" button: the 2.6% fan offset between stacked cards. */
     case 'set-left': {
       const ids = targets(state);
+      const cards = cardLayers(doc);
+      const anchorX = cards[0]?.base.position.x ?? 0;
 
       return {
         ...state,
         doc: {
           ...doc,
-          layers: doc.layers.map((layer, index) =>
-            ids.includes(layer.id)
-              ? {
-                  ...layer,
-                  base: { ...layer.base, position: { ...layer.base.position, x: 2.6 * index } },
-                }
-              : layer,
-          ),
+          layers: doc.layers.map((layer) => {
+            if (!ids.includes(layer.id)) return layer;
+
+            // The fan offset counts from the first card, not from wherever this
+            // layer happens to sit in the document.
+            const order = cards.findIndex((card) => card.id === layer.id);
+
+            return {
+              ...layer,
+              base: {
+                ...layer.base,
+                position: { ...layer.base.position, x: anchorX + 2.6 * Math.max(0, order) },
+              },
+            };
+          }),
         },
       };
     }
@@ -448,23 +522,19 @@ function reducer(state: WorkbenchState, action: Action): WorkbenchState {
     case 'apply-animation': {
       const ids = targets(state);
 
-      if (!action.value) {
-        // "None" clears what the select last laid down, leaving hand-made keys
-        const cleared = animationPresets
-          .map((preset) => ids.map((id) => trackOf(doc, id, preset.property)?.id))
-          .flat()
-          .filter(Boolean) as string[];
+      // Only the outgoing animation's own track is cleared, so switching from
+      // Flip to Fade does not quietly delete keys you placed by hand.
+      const cleaned = action.previous
+        ? ids.reduce((next, id) => clearAnimation(next, id, action.previous as string), doc)
+        : doc;
 
-        return {
-          ...state,
-          doc: { ...doc, keys: doc.keys.filter((key) => !cleared.includes(key.trackId)) },
-          view: { ...view, activePreset: null },
-        };
+      if (!action.value) {
+        return { ...state, doc: cleaned, view: { ...view, activePreset: null } };
       }
 
       return {
         ...state,
-        doc: ids.reduce((next, id) => applyAnimation(next, id, action.value), doc),
+        doc: ids.reduce((next, id) => applyAnimation(next, id, action.value), cleaned),
       };
     }
 

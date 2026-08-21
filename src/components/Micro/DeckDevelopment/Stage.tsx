@@ -32,7 +32,7 @@ import {
   StepperButton,
 } from './styled';
 import type { WorkbenchState } from './types';
-import { format, zoomSteps } from './utils';
+import { cardBox, format, zoomSteps } from './utils';
 
 interface StageProps {
   state: WorkbenchState;
@@ -128,7 +128,8 @@ function Stage({ state, dispatch, stageRef, onCenter }: StageProps) {
         sx={{
           flex: 1,
           position: 'relative',
-          minHeight: 262,
+          // must be able to shrink, or the canvas alone forces a page scrollbar
+          minHeight: 0,
           margin: '14px 0',
           perspective: view.three ? `${doc.perspective}px` : undefined,
         }}
@@ -172,14 +173,17 @@ function Stage({ state, dispatch, stageRef, onCenter }: StageProps) {
               position: 'absolute',
               left: `${anchorPose.position.x}%`,
               top: `${anchorPose.position.y}%`,
-              width: 172,
+              width: cardBox.width,
               transform: `scale(${(anchorPose.scale * view.zoom) / 100})`,
-              transformOrigin: 'top left',
+              // matches the card's own origin, so the leaders track it exactly
+              transformOrigin: 'center',
               pointerEvents: 'none',
               zIndex: 2,
             }}
           >
-            <Box sx={{ position: 'relative', height: 0 }}>
+            {/* Full card height, so the horizontal leader meets the card's
+                middle rather than its top edge. */}
+            <Box sx={{ position: 'relative', height: cardBox.height }}>
               <OriginLeader axis="h" />
               <OriginLeader axis="v" />
             </Box>

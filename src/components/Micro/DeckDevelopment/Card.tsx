@@ -44,7 +44,10 @@ function Card({ index, name, pose, zoom, three, ghost = false }: CardProps) {
         // card's own edges rather than to the widest thing in the stack
         width: 172,
         transform: `scale(${(scale * zoom) / 100}) ${spin}`,
-        transformOrigin: 'top left',
+        // The card turns and grows about its own middle. Anchoring the origin
+        // to the corner made Tilt, Sway and Flip swing the card around that
+        // corner instead of spinning it in place.
+        transformOrigin: 'center',
         opacity: ghost ? opacity * 0.25 : opacity,
         pointerEvents: ghost ? 'none' : undefined,
         zIndex: ghost ? 0 : 1,

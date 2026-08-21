@@ -8,6 +8,11 @@ import type { AnimationPreset, SelectOption } from './types';
  *
  * Stops are normalised 0..1 and scaled to the document duration when applied.
  * Every one opens and closes on the same value, so a looping run never jumps.
+ *
+ * Values are RELATIVE to the layer's own pose, never absolute: `position` and
+ * `rotate` stops are offsets added to the base, `scale` and `opacity` stops are
+ * factors multiplied by it. Absolute stops would teleport a centred card to the
+ * top-left corner the moment you picked an animation.
  */
 const animationPresets: AnimationPreset[] = [
   {
@@ -15,9 +20,9 @@ const animationPresets: AnimationPreset[] = [
     label: 'Breathing',
     property: 'scale',
     stops: [
-      { at: 0, value: 0.9 },
-      { at: 0.15, value: 1 },
-      { at: 1, value: 0.9 },
+      { at: 0, value: 1 },
+      { at: 0.15, value: 1.08 },
+      { at: 1, value: 1 },
     ],
   },
   {
@@ -79,11 +84,11 @@ const animationPresets: AnimationPreset[] = [
     label: 'Pop',
     property: 'scale',
     stops: [
-      { at: 0, value: 0.5 },
-      { at: 0.2, value: 0.46 },
-      { at: 0.45, value: 0.62 },
-      { at: 0.7, value: 0.48 },
-      { at: 1, value: 0.5 },
+      { at: 0, value: 1 },
+      { at: 0.2, value: 0.92 },
+      { at: 0.45, value: 1.24 },
+      { at: 0.7, value: 0.98 },
+      { at: 1, value: 1 },
     ],
   },
   {

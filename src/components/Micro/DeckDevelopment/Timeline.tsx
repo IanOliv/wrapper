@@ -28,7 +28,7 @@ import {
   trackProperties,
 } from './model';
 import type { Action } from './reducer';
-import { Chip, Readout } from './styled';
+import { Chip, Readout, TIMELINE_MAX } from './styled';
 import type { Layer, WorkbenchState } from './types';
 import { speedSteps, timecode, workbench } from './utils';
 
@@ -216,7 +216,7 @@ function Timeline({ state, dispatch, onCopy, copied, compact }: TimelineProps) {
     drag?.kind === 'marquee' && marqueeBounds
       ? {
           left: Math.min(drag.startX, drag.x) - marqueeBounds.left,
-          top: Math.min(drag.startY, drag.y) - marqueeBounds.top - RULER,
+          top: Math.min(drag.startY, drag.y) - marqueeBounds.top,
           width: Math.abs(drag.x - drag.startX),
           height: Math.abs(drag.y - drag.startY),
         }
@@ -230,6 +230,9 @@ function Timeline({ state, dispatch, onCopy, copied, compact }: TimelineProps) {
         display: 'flex',
         flexDirection: 'column',
         minWidth: 0,
+        minHeight: 0,
+        maxHeight: TIMELINE_MAX,
+        [theme.breakpoints.down('md')]: { maxHeight: 'none' },
         backgroundColor: workbench(theme).panel,
         borderTop: `1px solid ${theme.shell.border.subtle}`,
       })}
@@ -314,82 +317,41 @@ function Timeline({ state, dispatch, onCopy, copied, compact }: TimelineProps) {
         </FlexBox>
       </FlexBox>
 
-      {/* Body: gutter | tracks */}
-      <Box sx={{ display: 'grid', gridTemplateColumns: `${GUTTER}px 1fr`, minWidth: 0 }}>
+      {/* Body: a fixed ruler over rows that scroll under it, so the time
+          labels stay readable however many layers the document holds. */}
+      <Box
+        sx={{
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: 0,
+          flex: 1,
+        }}
+      >
         <Box
-          sx={(theme) => ({
-            borderRight: `1px solid ${theme.shell.border.subtle}`,
-            paddingTop: `${RULER}px`,
-          })}
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: `${GUTTER}px 1fr`,
+            minWidth: 0,
+            flexShrink: 0,
+          }}
         >
-          {rows.map((row) => (
-            <FlexBox
-              key={`${row.kind}-${row.id}`}
-              sx={{
-                height: row.height,
-                alignItems: 'center',
-                gap: '6px',
-                paddingLeft: `${8 + row.depth * 15}px`,
-                paddingRight: '8px',
-                fontSize: row.kind === 'layer' ? 12 : 11,
-                color: row.kind === 'layer' ? 'text.primary' : 'text.secondary',
-              }}
-            >
-              {row.kind === 'layer' ? (
-                <>
-                  <Box
-                    component="span"
-                    role="button"
-                    tabIndex={-1}
-                    aria-label={row.layer.collapsed ? 'Expand' : 'Collapse'}
-                    onClick={() => dispatch({ type: 'toggle-collapsed', id: row.layer.id })}
-                    sx={{ display: 'grid', placeItems: 'center', cursor: 'pointer', flexShrink: 0 }}
-                  >
-                    {row.layer.collapsed ? <CaretRight size={11} /> : <CaretDown size={11} />}
-                  </Box>
-                  <Box
-                    component="span"
-                    sx={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: '2px',
-                      backgroundColor: row.layer.color,
-                      flexShrink: 0,
-                    }}
-                  />
-                </>
-              ) : (
-                <Box component="span" sx={{ width: 15, flexShrink: 0 }} />
-              )}
-              <Box
-                component="span"
-                sx={{
-                  minWidth: 0,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {row.label}
-              </Box>
-            </FlexBox>
-          ))}
-        </Box>
-
-        <Box
-          ref={trackArea}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onPointerLeave={endDrag}
-          sx={{ position: 'relative', minWidth: 0, touchAction: 'none', userSelect: 'none' }}
-        >
-          {/* Ruler */}
+          <Box
+            sx={(theme) => ({
+              height: RULER,
+              borderRight: `1px solid ${theme.shell.border.subtle}`,
+              borderBottom: `1px solid ${theme.shell.border.subtle}`,
+            })}
+          />
           <Box
             onPointerDown={beginScrub}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
             sx={(theme) => ({
               height: RULER,
               position: 'relative',
               cursor: 'ew-resize',
+              touchAction: 'none',
               borderBottom: `1px solid ${theme.shell.border.subtle}`,
             })}
           >
@@ -415,10 +377,94 @@ function Timeline({ state, dispatch, onCopy, copied, compact }: TimelineProps) {
               </Box>
             ))}
           </Box>
+        </Box>
 
-          {/* Rows */}
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: `${GUTTER}px 1fr`,
+            minWidth: 0,
+            minHeight: 0,
+            flex: 1,
+            overflowY: 'auto',
+          }}
+        >
           <Box
-            sx={{ position: 'relative', height: bodyHeight }}
+            sx={(theme) => ({
+              borderRight: `1px solid ${theme.shell.border.subtle}`,
+            })}
+          >
+            {rows.map((row) => (
+              <FlexBox
+                key={`${row.kind}-${row.id}`}
+                sx={{
+                  height: row.height,
+                  alignItems: 'center',
+                  gap: '6px',
+                  paddingLeft: `${8 + row.depth * 15}px`,
+                  paddingRight: '8px',
+                  fontSize: row.kind === 'layer' ? 12 : 11,
+                  color: row.kind === 'layer' ? 'text.primary' : 'text.secondary',
+                }}
+              >
+                {row.kind === 'layer' ? (
+                  <>
+                    <Box
+                      component="span"
+                      role="button"
+                      tabIndex={-1}
+                      aria-label={row.layer.collapsed ? 'Expand' : 'Collapse'}
+                      onClick={() => dispatch({ type: 'toggle-collapsed', id: row.layer.id })}
+                      sx={{
+                        display: 'grid',
+                        placeItems: 'center',
+                        cursor: 'pointer',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {row.layer.collapsed ? <CaretRight size={11} /> : <CaretDown size={11} />}
+                    </Box>
+                    <Box
+                      component="span"
+                      sx={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: '2px',
+                        backgroundColor: row.layer.color,
+                        flexShrink: 0,
+                      }}
+                    />
+                  </>
+                ) : (
+                  <Box component="span" sx={{ width: 15, flexShrink: 0 }} />
+                )}
+                <Box
+                  component="span"
+                  sx={{
+                    minWidth: 0,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {row.label}
+                </Box>
+              </FlexBox>
+            ))}
+          </Box>
+
+          <Box
+            ref={trackArea}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerLeave={endDrag}
+            sx={{
+              position: 'relative',
+              minWidth: 0,
+              height: bodyHeight,
+              touchAction: 'none',
+              userSelect: 'none',
+            }}
             onPointerDown={(event) => {
               if (event.altKey) {
                 beginScrub(event);
@@ -588,8 +634,22 @@ function Timeline({ state, dispatch, onCopy, copied, compact }: TimelineProps) {
               />
             )}
           </Box>
+        </Box>
 
-          {/* Playhead, over everything */}
+        {/* The playhead sits outside the scroller, so it spans the ruler and
+            the rows and never scrolls out of view. */}
+        <Box
+          sx={{
+            position: 'absolute',
+            left: GUTTER,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            overflow: 'hidden',
+            pointerEvents: 'none',
+            zIndex: 4,
+          }}
+        >
           <Box
             sx={(theme) => ({
               position: 'absolute',
@@ -598,8 +658,6 @@ function Timeline({ state, dispatch, onCopy, copied, compact }: TimelineProps) {
               left: `${asPercent(doc.playhead)}%`,
               width: '1px',
               backgroundColor: theme.palette.primary.main,
-              pointerEvents: 'none',
-              zIndex: 4,
             })}
           >
             <Box

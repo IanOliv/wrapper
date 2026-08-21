@@ -16,7 +16,13 @@ import { workbench } from './utils';
 const Workbench = styled(Box)(({ theme }) => ({
   display: 'grid',
   gridTemplateColumns: '168px 1fr 296px',
-  gridTemplateRows: 'minmax(424px, 1fr) auto',
+  // The workbench fills the height the shell gives it and never exceeds it:
+  // the three columns and the timeline scroll inside themselves instead of
+  // pushing the page into a scrollbar.
+  height: '100%',
+  minHeight: 0,
+  maxHeight: '100%',
+  gridTemplateRows: 'minmax(0, 1fr) auto',
   gridTemplateAreas: `
     "layers stage inspector"
     "layers timeline timeline"
@@ -25,6 +31,10 @@ const Workbench = styled(Box)(({ theme }) => ({
   border: `1px solid ${theme.shell.border.subtle}`,
   overflow: 'hidden',
   [theme.breakpoints.down('md')]: {
+    // A phone cannot show all four regions at once; here the page does scroll,
+    // with the inspector as a bottom sheet.
+    height: 'auto',
+    maxHeight: 'none',
     gridTemplateColumns: '1fr',
     gridTemplateRows: 'auto minmax(320px, 1fr) auto 60vh',
     gridTemplateAreas: `
@@ -35,6 +45,9 @@ const Workbench = styled(Box)(({ theme }) => ({
     `,
   },
 }));
+
+/** How much of the workbench the timeline may take before its rows scroll. */
+const TIMELINE_MAX = 'min(320px, 46%)';
 
 /** Each column scrolls on its own, so scrubbing never moves the other two. */
 const Panel = styled(Box)(({ theme }) => ({
@@ -74,9 +87,11 @@ const StageGround = styled(Box, {
   gridArea: 'stage',
   display: 'flex',
   flexDirection: 'column',
-  minHeight: 424,
+  // 424 is the design's preferred height, not a floor: on a short viewport the
+  // stage yields so the workbench still fits without a page scrollbar.
+  minHeight: 0,
   minWidth: 0,
-  overflow: 'auto',
+  overflow: 'hidden',
   backgroundColor: theme.palette.background.default,
   backgroundImage: grid ? `radial-gradient(${workbench(theme).dot} 1px, transparent 1px)` : 'none',
   backgroundSize: '18px 18px',
@@ -330,6 +345,7 @@ const NumberField = styled('input')(({ theme }) => ({
 }));
 
 export {
+  TIMELINE_MAX,
   BipolarSlider,
   Chip,
   Group,
