@@ -47,6 +47,9 @@ type PathRouteCustomProps = {
   paletteGroup?: 'Modules' | 'Labs' | 'Account' | 'Actions';
   /** only mounted in development */
   devOnly?: boolean;
+  /** the module asks the shell for its gutter — for a route whose content *is*
+   *  the page, like ARfiti's map. The shell still owns header, rail and toasts. */
+  fullBleed?: boolean;
 };
 
 type Routes = Record<Pages, PathRouteProps & PathRouteCustomProps>;

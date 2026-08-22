@@ -52,6 +52,7 @@ const routes: Routes = {
     icon: Camera,
     group: NavGroup.Labs,
     experimental: true,
+    fullBleed: true,
     description: 'Camera + map · asks for permission',
     aliases: ['ar', 'camera', 'graffiti'],
   },
