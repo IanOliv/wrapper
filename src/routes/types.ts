@@ -9,6 +9,7 @@ enum Pages {
   Chat,
   ARfiti,
   DeckBoard,
+  DeckDevelopment,
   Stage,
   Profile,
   Login,
@@ -18,7 +19,7 @@ enum Pages {
   NotFound,
 }
 
-// Eleven routes, four kinds of thing.
+// Twelve routes, four kinds of thing.
 enum NavGroup {
   /** Primary destinations — the bottom bar on mobile, top of the rail on desktop */
   Modules = 'modules',
