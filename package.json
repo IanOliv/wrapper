@@ -1,79 +1,45 @@
 {
   "name": "wrapper",
   "version": "0.0.1",
-  "description": "Starter kit for modern web applications",
-  "homepage": "https://react-pwa.surenatoyan.com/",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/suren-atoyan/react-pwa.git"
-  },
-  "bugs": {
-    "url": "https://github.com/suren-atoyan/react-pwa/issues",
-    "email": "contact@surenatoyan.com"
-  },
-  "license": "MIT",
+  "private": true,
+  "description": "Starter kit for modern web applications, extended into a lab of experimental microapps",
+  "workspaces": [
+    "apps/*"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "https-preview": "serve dist",
+    "dev": "concurrently -n host,chat-remote -c blue,green \"npm:dev:host\" \"npm:dev:chat-remote\"",
+    "dev:host": "npm run dev --workspace=apps/host",
+    "dev:chat-remote": "npm run dev --workspace=apps/chat-remote",
+    "build": "npm run build --workspace=apps/chat-remote && npm run build --workspace=apps/host",
+    "build:host": "npm run build --workspace=apps/host",
+    "build:chat-remote": "npm run build --workspace=apps/chat-remote",
+    "preview": "concurrently -n host,chat-remote -c blue,green \"npm:preview:host\" \"npm:preview:chat-remote\"",
+    "preview:host": "npm run preview --workspace=apps/host",
+    "preview:chat-remote": "npm run preview --workspace=apps/chat-remote",
     "prepare": "husky install"
-  },
-  "dependencies": {
-    "@emotion/react": "^11.10.4",
-    "@emotion/styled": "^11.10.4",
-    "@fontsource-variable/inter": "^5.3.0",
-    "@fontsource/jetbrains-mono": "^5.3.0",
-    "@mui/icons-material": "^5.10.6",
-    "@mui/lab": "5.0.0-alpha.100",
-    "@mui/material": "^5.10.6",
-    "@mui/system": "^5.10.6",
-    "@mui/utils": "^5.10.6",
-    "@phosphor-icons/react": "^2.1.10",
-    "@popmotion/popcorn": "^0.4.4",
-    "framer-motion": "^11.11.11",
-    "is-mobile": "^3.1.1",
-    "lodash": "^4.17.21",
-    "notistack": "^3.0.1",
-    "popmotion": "^11.0.5",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-error-boundary": "^3.1.4",
-    "react-helmet-async": "^1.3.0",
-    "react-hotkeys-hook": "^3.4.7",
-    "react-lorem-ipsum": "^1.4.10",
-    "react-router-dom": "^6.4.1",
-    "react-webcam": "^7.2.0",
-    "recoil": "^0.7.5"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
-    "@types/lodash": "^4.17.13",
-    "@types/node": "^18.7.21",
-    "@types/react": "^18.0.21",
-    "@types/react-dom": "^18.0.6",
     "@typescript-eslint/eslint-plugin": "^5.38.0",
     "@typescript-eslint/parser": "^5.38.0",
-    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.0",
     "eslint": "^8.24.0",
     "eslint-plugin-react": "^7.31.8",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "https-localhost": "^4.7.1",
     "husky": "^8.0.1",
     "lint-staged": "^15.2.10",
     "prettier": "2.7.1",
-    "typescript": "^5.6.3",
-    "vite": "^6.2.0",
-    "vite-plugin-pwa": "^0.21.1"
+    "typescript": "^5.6.3"
   },
   "lint-staged": {
-    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+    "apps/*/src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
       "prettier --write"
     ],
-    "src/**/*.{js,jsx,ts,tsx,json}": [
+    "apps/*/src/**/*.{js,jsx,ts,tsx,json}": [
       "eslint --max-warnings=0"
     ]
   },
+  "license": "MIT",
   "author": {
     "name": "Suren Atoyan",
     "email": "contact@surenatoyan.com",
@@ -83,6 +49,7 @@
     "react",
     "pwa",
     "starter-kit",
-    "vite"
+    "vite",
+    "module-federation"
   ]
 }

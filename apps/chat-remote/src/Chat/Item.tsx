@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography';
 import { PaperPlaneTilt } from '@phosphor-icons/react';
 
 import { ChatSurface, Composer, Message, MessageList } from './styled';
-import type { ChatMessage } from './types';
+import type { ChatMessage, UserProfile } from './types';
 
 const seed: ChatMessage[] = [
   { id: 1, own: false, text: 'Hello, how can I help you?' },
@@ -16,7 +16,15 @@ const seed: ChatMessage[] = [
   { id: 3, own: false, text: 'Header pressure has been out of range for about nine seconds.' },
 ];
 
-function Item() {
+type ItemProps = {
+  // Passed by the host — see apps/host/src/pages/Chat/Chat.tsx. Cross-module
+  // Recoil sharing doesn't work in this setup (confirmed: the remote's own
+  // Recoil instance never sees the host's <RecoilRoot>), so app state crosses
+  // the federation boundary as a plain prop instead, same as the theme.
+  userProfile?: UserProfile;
+};
+
+function Item({ userProfile }: ItemProps) {
   const [conversation, setConversation] = useState<ChatMessage[]>(seed);
   const [draft, setDraft] = useState('');
   const endRef = useRef<HTMLDivElement>(null);
@@ -38,9 +46,16 @@ function Item() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
       <Typography variant="h1">Conversation</Typography>
-      <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5, mb: 3 }}>
-        A prototype, but a destination people expect to find.
-      </Typography>
+      <Box sx={{ mt: 0.5, mb: 3 }}>
+        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+          A prototype, but a destination people expect to find.
+        </Typography>
+        {userProfile && (
+          <Typography variant="caption" sx={{ color: 'text.disabled' }}>
+            Signed in as {userProfile.role} · {userProfile.tenantName}
+          </Typography>
+        )}
+      </Box>
 
       <ChatSurface>
         <MessageList>

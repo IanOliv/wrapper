@@ -13,6 +13,9 @@ dev-dist
 dist-ssr
 *.local
 
+# Module Federation runtime diagnostics/cache
+.mf/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
