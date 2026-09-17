@@ -25,7 +25,11 @@ function Shell({ children }: ShellProps) {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        height: '100dvh',
+        // inherits the already-correct html/body/#root percentage chain
+        // (see global.css) instead of re-querying the viewport with `dvh`,
+        // which can resolve a hair short of it in an installed iOS PWA and
+        // let the whole document scroll/bounce past this box's own edges.
+        height: '100%',
         backgroundColor: 'background.default',
       }}
     >
