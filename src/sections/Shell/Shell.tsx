@@ -2,7 +2,6 @@ import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-import useVisualViewportHeight from '@/hooks/useVisualViewportHeight';
 import { useActiveRoute } from '@/routes/utils';
 import Header from '@/sections/Header';
 import { BottomBar, Rail } from '@/sections/Navigation';
@@ -16,8 +15,6 @@ function Shell({ children }: ShellProps) {
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const route = useActiveRoute();
 
-  useVisualViewportHeight();
-
   // A module can ask for the gutter when its content *is* the page — ARfiti's
   // map. That is the only thing the flag changes; the module still never sets
   // the header, the nav or the toasts.
@@ -28,11 +25,11 @@ function Shell({ children }: ShellProps) {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        // `--app-height` (set by useVisualViewportHeight) tracks the actual
-        // visible area, shrinking when the keyboard opens; falls back to the
-        // html/body/#root percentage chain (see global.css) before the effect
-        // runs or where visualViewport isn't supported.
-        height: 'var(--app-height, 100%)',
+        // inherits the already-correct html/body/#root percentage chain
+        // (see global.css) instead of re-querying the viewport with `dvh`,
+        // which can resolve a hair short of it in an installed iOS PWA and
+        // let the whole document scroll/bounce past this box's own edges.
+        height: '100%',
         backgroundColor: 'background.default',
       }}
     >
