@@ -3,7 +3,13 @@
   <head>
     <title>Wrapper</title>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- Pinch-zoom desyncs the fixed header/bottom bar from the visual viewport in
+         mobile Safari, leaving them stranded mid-content — this is an app shell,
+         not zoomable text, so pinch is locked out entirely. -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
 
     <meta name="description" content="One shell. Every module.">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
