@@ -44,6 +44,17 @@ body,
   height: 100%;
 }
 
+/* The document itself must never scroll or rubber-band — every module scrolls
+   inside Shell's own content region. Without this, a short page (e.g. a chat
+   with only a couple of messages) lets the whole shell — header and bottom bar
+   included — get dragged around on a pull gesture, exposing this dark ground
+   underneath as a gap. */
+html,
+body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 body {
   margin: 0;
 }
