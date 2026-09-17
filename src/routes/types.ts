@@ -9,6 +9,7 @@ enum Pages {
   Chat,
   ARfiti,
   DeckBoard,
+  DeckBoardSession,
   DeckDevelopment,
   Stage,
   Profile,

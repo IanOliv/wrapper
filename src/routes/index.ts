@@ -67,6 +67,16 @@ const routes: Routes = {
     description: 'Physics playground',
     aliases: ['deck', 'cards physics', 'playground'],
   },
+  [Pages.DeckBoardSession]: {
+    component: asyncComponentLoader(() => import('@/pages/DeckBoardSession')),
+    path: '/deck-board-session',
+    title: 'DeckBoard session',
+    icon: Cards,
+    group: NavGroup.Labs,
+    experimental: true,
+    description: 'Card battler board · hand, slots, attacks, debug drawer',
+    aliases: ['deckboard', 'deck board', 'card battler', 'board game', 'combat'],
+  },
   [Pages.DeckDevelopment]: {
     component: asyncComponentLoader(() => import('@/pages/DeckDevelopment')),
     path: '/deck-development',
