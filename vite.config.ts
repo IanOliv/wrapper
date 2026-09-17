@@ -11,6 +11,11 @@ export default defineConfig({
     react(),
     VitePWA({
       manifest,
+      // Layout fixes were shipping across several rapid deploys and going
+      // unseen on the installed PWA because the default 'prompt' mode waits
+      // for a manual "Reload now" click on a toast that's easy to miss on a
+      // home-screen app. New builds now activate and reload on their own.
+      registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
       // switch to "true" to enable sw on development
       devOptions: {
