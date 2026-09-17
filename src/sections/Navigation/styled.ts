@@ -81,8 +81,10 @@ const BottomBarSurface = styled(Box)(({ theme }) => ({
   flexShrink: 0,
   display: 'flex',
   alignItems: 'stretch',
-  height: theme.shell.layout.bottomBar,
-  paddingBottom: 'env(safe-area-inset-bottom)',
+  // the safe-area gutter is reserved here (so the bar's total footprint is
+  // unchanged) but no longer as the surface's own padding — see BottomBarItem,
+  // which stretches into it so the active tint reaches the true screen edge.
+  height: `calc(${theme.shell.layout.bottomBar}px + env(safe-area-inset-bottom))`,
   boxSizing: 'content-box',
   backgroundColor: theme.shell.surface.level1,
   borderTop: `1px solid ${theme.shell.border.card}`,
@@ -99,6 +101,9 @@ const BottomBarItem = styled(ButtonBase, { shouldForwardProp: shouldForward })<
   justifyContent: 'center',
   gap: 3,
   minWidth: 0,
+  // keeps the icon/label clear of the home-indicator gesture strip while the
+  // item's own background — stretched by the surface above — still fills it
+  paddingBottom: 'env(safe-area-inset-bottom)',
   color: active ? theme.palette.text.primary : theme.palette.text.secondary,
   backgroundColor: active ? theme.shell.tint : 'transparent',
   fontSize: 11,
