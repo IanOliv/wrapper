@@ -180,6 +180,10 @@ function componentsFor(mode: PaletteMode): ThemeOptions['components'] {
     MuiCssBaseline: {
       styleOverrides: {
         ':root': { colorScheme: mode },
+        // Belt-and-suspenders alongside the viewport meta tag: some mobile
+        // browsers still honour a pinch gesture even with user-scalable=no,
+        // which desyncs the fixed header/bottom bar from the visual viewport.
+        'html, body': { touchAction: 'pan-x pan-y' },
         body: {
           fontFamily: fontFamily.sans,
           WebkitFontSmoothing: 'antialiased',

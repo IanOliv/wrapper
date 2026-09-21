@@ -9,6 +9,8 @@ enum Pages {
   Chat,
   ARfiti,
   DeckBoard,
+  DeckBoardSession,
+  DeckDevelopment,
   Stage,
   Profile,
   Login,
@@ -18,7 +20,7 @@ enum Pages {
   NotFound,
 }
 
-// Eleven routes, four kinds of thing.
+// Twelve routes, four kinds of thing.
 enum NavGroup {
   /** Primary destinations — the bottom bar on mobile, top of the rail on desktop */
   Modules = 'modules',
@@ -47,6 +49,9 @@ type PathRouteCustomProps = {
   paletteGroup?: 'Modules' | 'Labs' | 'Account' | 'Actions';
   /** only mounted in development */
   devOnly?: boolean;
+  /** the module asks the shell for its gutter — for a route whose content *is*
+   *  the page, like ARfiti's map. The shell still owns header, rail and toasts. */
+  fullBleed?: boolean;
 };
 
 type Routes = Record<Pages, PathRouteProps & PathRouteCustomProps>;

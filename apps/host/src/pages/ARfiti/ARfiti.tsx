@@ -1,14 +1,13 @@
-// import Item from '@/components/Item';
-import { ARfiti as AComp } from '@/components/ARfiti';
-import { FullSizeCenteredFlexBox } from '@/components/styled';
+import Meta from '@/components/Meta';
+import Item from '@/components/Micro/ARfiti';
 
+// The route is full-bleed (see `fullBleed` in `routes/index.ts`): the map is the
+// page, so the shell hands over its gutter and the module fills the frame.
 function ARfiti() {
   return (
     <>
-      <FullSizeCenteredFlexBox>
-        {/* <Item /> */}
-        <AComp />
-      </FullSizeCenteredFlexBox>
+      <Meta title="ARfiti" />
+      <Item />
     </>
   );
 }
