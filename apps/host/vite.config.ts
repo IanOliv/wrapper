@@ -1,10 +1,18 @@
 import * as path from 'path';
 import { federation } from '@module-federation/vite';
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 import manifest from './manifest.json';
+
+// Origin serving the chat remote's remoteEntry.js. Read from .env files or the
+// build environment (e.g. Vercel); baked in at build time.
+const { CHAT_REMOTE_URL = 'http://localhost:5174' } = loadEnv(
+  process.env.NODE_ENV ?? 'development',
+  __dirname,
+  'CHAT_REMOTE',
+);
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -42,7 +50,7 @@ export default defineConfig({
         chat_remote: {
           type: 'module',
           name: 'chat_remote',
-          entry: 'http://localhost:5174/remoteEntry.js',
+          entry: `${CHAT_REMOTE_URL.replace(/\/$/, '')}/remoteEntry.js`,
         },
       },
       // @emotion/react and @emotion/styled are deliberately NOT shared: their
