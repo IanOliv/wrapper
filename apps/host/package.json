@@ -1,0 +1,52 @@
+{
+  "name": "host",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Wrapper shell — hosts federated remotes",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "https-preview": "serve dist"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.10.4",
+    "@emotion/styled": "^11.10.4",
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@mui/icons-material": "^5.10.6",
+    "@mui/lab": "5.0.0-alpha.100",
+    "@mui/material": "^5.10.6",
+    "@mui/system": "^5.10.6",
+    "@mui/utils": "^5.10.6",
+    "@phosphor-icons/react": "^2.1.10",
+    "@popmotion/popcorn": "^0.4.4",
+    "framer-motion": "^11.11.11",
+    "is-mobile": "^3.1.1",
+    "lodash": "^4.17.21",
+    "notistack": "^3.0.1",
+    "popmotion": "^11.0.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-error-boundary": "^3.1.4",
+    "react-helmet-async": "^1.3.0",
+    "react-hotkeys-hook": "^3.4.7",
+    "react-lorem-ipsum": "^1.4.10",
+    "react-router-dom": "^6.4.1",
+    "react-webcam": "^7.2.0",
+    "recoil": "^0.7.5"
+  },
+  "devDependencies": {
+    "@module-federation/runtime": "^2.9.0",
+    "@module-federation/vite": "^1.21.6",
+    "@types/lodash": "^4.17.13",
+    "@types/node": "^18.7.21",
+    "@types/react": "^18.0.21",
+    "@types/react-dom": "^18.0.6",
+    "@vitejs/plugin-react": "^4.3.4",
+    "https-localhost": "^4.7.1",
+    "vite": "^6.2.0",
+    "vite-plugin-pwa": "^0.21.1"
+  }
+}

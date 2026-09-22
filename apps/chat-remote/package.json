@@ -1,0 +1,27 @@
+{
+  "name": "chat-remote",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Federated Chat microapp — Module Federation remote consumed by the host shell",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.10.4",
+    "@emotion/styled": "^11.10.4",
+    "@mui/material": "^5.10.6",
+    "@phosphor-icons/react": "^2.1.10",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@module-federation/vite": "^1.21.6",
+    "@types/react": "^18.0.21",
+    "@types/react-dom": "^18.0.6",
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.2.0"
+  }
+}
