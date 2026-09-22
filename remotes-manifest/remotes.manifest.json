@@ -5,7 +5,7 @@
       "id": "chat",
       "name": "chat_remote",
       "type": "module",
-      "entry": "https://wrapper-chat-remote.vercel.app/remoteEntry.js",
+      "entry": "https://ingredient-chat.vercel.app/remoteEntry.js",
       "module": "Chat",
       "nav": {
         "title": "Chat",
