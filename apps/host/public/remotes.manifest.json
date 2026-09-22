@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "remotes": [
+    {
+      "id": "chat",
+      "name": "chat_remote",
+      "type": "module",
+      "entry": "http://localhost:5174/remoteEntry.js",
+      "module": "Chat",
+      "nav": {
+        "title": "Chat",
+        "icon": "ChatTeardropDots",
+        "group": "modules",
+        "description": "Conversations",
+        "aliases": ["messages", "talk", "dm"]
+      }
+    }
+  ]
+}

@@ -2,7 +2,6 @@ import {
   Broadcast,
   Camera,
   Cards,
-  ChatTeardropDots,
   Columns,
   SignIn,
   SlidersHorizontal,
@@ -36,15 +35,6 @@ const routes: Routes = {
     group: NavGroup.Modules,
     description: 'SmartToir readings',
     aliases: ['smarttoir', 'toir', 'readings', 'telemetry', 'iot'],
-  },
-  [Pages.Chat]: {
-    component: asyncComponentLoader(() => import('@/pages/Chat')),
-    path: '/Chat',
-    title: 'Chat',
-    icon: ChatTeardropDots,
-    group: NavGroup.Modules,
-    description: 'Conversations',
-    aliases: ['messages', 'talk', 'dm'],
   },
   [Pages.ARfiti]: {
     component: asyncComponentLoader(() => import('@/pages/ARfiti')),
@@ -141,6 +131,14 @@ const routes: Routes = {
     path: '/card/:id',
     title: 'Cards',
     icon: Cards,
+    group: NavGroup.Hidden,
+  },
+  // The one static entry point for every federated remote in the manifest —
+  // see src/remotes/toRoute.ts, which builds the actual nav-visible Route for
+  // each manifest entry from this same template (`/modules/{id}`).
+  [Pages.DynamicModule]: {
+    component: asyncComponentLoader(() => import('@/pages/DynamicModule')),
+    path: '/modules/:remoteId',
     group: NavGroup.Hidden,
   },
   [Pages.Tokens]: {

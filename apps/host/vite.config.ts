@@ -1,18 +1,10 @@
 import * as path from 'path';
 import { federation } from '@module-federation/vite';
 import react from '@vitejs/plugin-react';
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 import manifest from './manifest.json';
-
-// Origin serving the chat remote's remoteEntry.js. Read from .env files or the
-// build environment (e.g. Vercel); baked in at build time.
-const { CHAT_REMOTE_URL = 'http://localhost:5174' } = loadEnv(
-  process.env.NODE_ENV ?? 'development',
-  __dirname,
-  'CHAT_REMOTE',
-);
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -34,25 +26,20 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html}', '**/*.{svg,png,jpg,gif}'],
       },
     }),
-    // Module Federation prototype: the host consumes the `chat_remote`
-    // remote (apps/chat-remote) at runtime instead of importing Chat
-    // locally. See src/pages/Chat/Chat.tsx.
+    // Module Federation: the host consumes remotes discovered at runtime from
+    // a manifest, not declared here. See src/remotes/ and src/store/remotes.
     federation({
       name: 'host',
-      // Manual ambient types live in src/remotes.d.ts instead of relying on
-      // automatic .d.ts download/generation for this prototype.
       dts: false,
-      remotes: {
-        // `type: 'module'` is required — the bare 'name@url' string form
-        // assumes a Webpack-style `var` remote, which fails to load a
-        // Vite-built (native ESM) remoteEntry.js with
-        // "Cannot use import statement outside a module".
-        chat_remote: {
-          type: 'module',
-          name: 'chat_remote',
-          entry: `${CHAT_REMOTE_URL.replace(/\/$/, '')}/remoteEntry.js`,
-        },
-      },
+      // Remotes are NOT declared here on purpose. This plugin's `remotes`
+      // option rewrites `import('name/Module')` into a build-time-known
+      // virtual module — it can't support remotes discovered at runtime.
+      // Instead, src/remotes/registry.ts calls registerRemotes()/loadRemote()
+      // from @module-federation/runtime directly. This still shares the same
+      // runtime singleton (and its shared scope, below) that this plugin's
+      // own generated host-init bootstrap sets up — confirmed empirically,
+      // in dev and in a production build, before building the rest of this.
+      remotes: {},
       // @emotion/react and @emotion/styled are deliberately NOT shared: their
       // generated shared-scope chunk hits a circular init error ("Cannot
       // access '...' before initialization") under this plugin's Rollup

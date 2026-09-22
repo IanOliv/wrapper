@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "remotes": [
+    {
+      "id": "chat",
+      "name": "chat_remote",
+      "type": "module",
+      "entry": "https://wrapper-chat-remote.vercel.app/remoteEntry.js",
+      "module": "Chat",
+      "nav": {
+        "title": "Chat",
+        "icon": "ChatTeardropDots",
+        "group": "modules",
+        "description": "Conversations",
+        "aliases": ["messages", "talk", "dm"]
+      }
+    }
+  ]
+}

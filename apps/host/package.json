@@ -38,6 +38,7 @@
     "recoil": "^0.7.5"
   },
   "devDependencies": {
+    "@module-federation/runtime": "^2.9.0",
     "@module-federation/vite": "^1.21.6",
     "@types/lodash": "^4.17.13",
     "@types/node": "^18.7.21",

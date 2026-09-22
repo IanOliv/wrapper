@@ -6,7 +6,6 @@ import type { Icon } from '@phosphor-icons/react';
 enum Pages {
   Card,
   SmartToir,
-  Chat,
   ARfiti,
   DeckBoard,
   DeckBoardSession,
@@ -16,6 +15,7 @@ enum Pages {
   Login,
   Register,
   CardDetail,
+  DynamicModule,
   Tokens,
   NotFound,
 }

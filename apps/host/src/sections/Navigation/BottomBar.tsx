@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Circle, DotsThree } from '@phosphor-icons/react';
 
 import { NavGroup } from '@/routes/types';
-import { isRouteActive, routesInGroup } from '@/routes/utils';
+import { isRouteActive, useRoutesInGroup } from '@/routes/utils';
 
 import ActiveRule from './ActiveRule';
 import MoreSheet from './MoreSheet';
@@ -16,8 +16,8 @@ function BottomBar() {
   const { pathname } = useLocation();
   const [isMoreOpen, setIsMoreOpen] = useState(false);
 
-  const modules = routesInGroup(NavGroup.Modules);
-  const behindMore = [...routesInGroup(NavGroup.Labs), ...routesInGroup(NavGroup.Account)];
+  const modules = useRoutesInGroup(NavGroup.Modules);
+  const behindMore = [...useRoutesInGroup(NavGroup.Labs), ...useRoutesInGroup(NavGroup.Account)];
   const isMoreActive = behindMore.some((route) => isRouteActive(route, pathname));
 
   return (

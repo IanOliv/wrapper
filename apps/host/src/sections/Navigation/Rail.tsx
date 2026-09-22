@@ -8,7 +8,7 @@ import Typography from '@mui/material/Typography';
 import { CaretLineLeft, CaretLineRight } from '@phosphor-icons/react';
 
 import { NavGroup } from '@/routes/types';
-import { isRouteActive, routesInGroup } from '@/routes/utils';
+import { isRouteActive, useRoutesInGroup } from '@/routes/utils';
 import useRail from '@/store/rail';
 
 import RailItem from './RailItem';
@@ -20,8 +20,8 @@ function Rail() {
   const [isExpanded, railActions] = useRail();
   const { pathname } = useLocation();
 
-  const modules = routesInGroup(NavGroup.Modules);
-  const labs = routesInGroup(NavGroup.Labs);
+  const modules = useRoutesInGroup(NavGroup.Modules);
+  const labs = useRoutesInGroup(NavGroup.Labs);
 
   return (
     <RailSurface component="nav" aria-label="Modules" expanded={isExpanded}>

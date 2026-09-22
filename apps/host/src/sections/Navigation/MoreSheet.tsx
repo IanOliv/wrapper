@@ -16,7 +16,7 @@ import KeyCap from '@/components/KeyCap';
 import { repository } from '@/config';
 import routes from '@/routes';
 import { NavGroup, Pages } from '@/routes/types';
-import { isRouteActive, routesInGroup } from '@/routes/utils';
+import { isRouteActive, useRoutesInGroup } from '@/routes/utils';
 import useHotKeysDialog from '@/store/hotkeys';
 import { useWrapperSessionState } from '@/store/session';
 import useTheme from '@/store/theme';
@@ -35,8 +35,8 @@ function MoreSheet({ open, onClose }: MoreSheetProps) {
   const [, hotKeysDialogActions] = useHotKeysDialog();
   const [session, sessionActions] = useWrapperSessionState();
 
-  const labs = routesInGroup(NavGroup.Labs);
-  const account = routesInGroup(NavGroup.Account).filter((route) =>
+  const labs = useRoutesInGroup(NavGroup.Labs);
+  const account = useRoutesInGroup(NavGroup.Account).filter((route) =>
     session.token
       ? route.path !== routes[Pages.Login].path
       : route.path !== routes[Pages.Profile].path,

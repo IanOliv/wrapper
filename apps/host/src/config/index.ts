@@ -28,6 +28,14 @@ const messages = {
     fail: "This module didn't finish loading.",
     body: 'Usually a network hiccup between you and the chunk. Retrying often works.',
   },
+  remoteModule: {
+    title: "This module isn't answering.",
+    body: "Either it's down, or it's not one the shell knows about. Retrying often works.",
+    options: {
+      retry: 'Retry',
+      home: 'Back to Cards',
+    },
+  },
   images: {
     failed: 'something went wrong during image loading :(',
   },
