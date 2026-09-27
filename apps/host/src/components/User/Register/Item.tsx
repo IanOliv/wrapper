@@ -19,30 +19,42 @@ import {
 import Mark from '@/components/Mark';
 import routes from '@/routes';
 import { Pages } from '@/routes/types';
+import { signup } from '@/utils/auth/api';
 
-// NOTE: still UI-only — `doRegister()` in `utils/micro/api` is not wired up, and
-// the social buttons still only alert. Restyled to the tokens, behaviour unchanged.
+// The social buttons still only alert — out of scope here, real auth is now
+// wired only for username/password via the wrapper-api auth worker.
 function Register() {
-  const [register, setRegister] = useState({ username: '', password: '' });
+  const [register, setRegister] = useState({ username: '', password: '', email: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRegister({ ...register, [e.target.name]: e.target.value });
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!register.username || !register.password) {
-      setError('Please enter both username and password.');
+    if (!register.username || !register.password || !register.email) {
+      setError('Please fill in username, email and password.');
       setSuccess('');
       return;
     }
 
-    setError('');
-    setSuccess('Registration successful! (Simulated)');
-    // TODO: Implement registration logic here
+    setIsSubmitting(true);
+
+    try {
+      await signup(register);
+      setError('');
+      setSuccess('Account created — you can sign in now.');
+      setRegister({ username: '', password: '', email: '' });
+    } catch (err) {
+      setSuccess('');
+      setError(err instanceof Error ? err.message : 'Registration failed.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleProviderSignUp = (provider: string) => {
@@ -72,10 +84,21 @@ function Register() {
         <TextField
           id="register-username"
           name="username"
-          label="Username or email"
+          label="Username"
           value={register.username}
           onChange={handleChange}
           autoComplete="username"
+          size="small"
+          fullWidth
+        />
+        <TextField
+          id="register-email"
+          name="email"
+          type="email"
+          label="Email"
+          value={register.email}
+          onChange={handleChange}
+          autoComplete="email"
           size="small"
           fullWidth
         />
@@ -108,8 +131,8 @@ function Register() {
           </Box>
         )}
 
-        <Button type="submit" color="primary" fullWidth sx={{ mt: 1 }}>
-          Sign up
+        <Button type="submit" color="primary" disabled={isSubmitting} fullWidth sx={{ mt: 1 }}>
+          {isSubmitting ? 'Creating account…' : 'Sign up'}
         </Button>
       </Box>
 

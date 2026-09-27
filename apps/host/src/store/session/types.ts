@@ -1,13 +1,16 @@
-interface WrapperSession {
-  token: string;
-  profile?: WrapperProfile;
+interface WrapperUser {
+  id: string;
+  username: string;
+  email: string | null;
 }
 
-interface WrapperProfile {
-  id: number;
-  role: string;
-  tenant_name: string;
-  permissions: unknown;
+interface WrapperSession {
+  token: string;
+  refreshToken?: string;
+  expiresAt?: number;
+  user?: WrapperUser;
+  permissions?: string[];
+  profiles?: string[];
 }
 
 type Actions = {
@@ -15,4 +18,4 @@ type Actions = {
   clearSession: () => void;
 };
 
-export type { Actions, WrapperSession };
+export type { Actions, WrapperSession, WrapperUser };

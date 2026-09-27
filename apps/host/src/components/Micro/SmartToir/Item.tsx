@@ -11,8 +11,8 @@ import StatTile from './StatTile';
 import type { Sensor } from './types';
 import { placeholderSensors, summarise } from './utils';
 
-// NOTE: still the module's own hardcoded endpoint — see `utils/micro/api` for
-// where new calls should go.
+// NOTE: still hardcoded to a local sensor server — not wired to any real
+// backend yet (see `utils/auth/api.ts` for the env-configured pattern to follow).
 const getSensors = async (): Promise<Sensor[]> => {
   const response = await fetch('http://localhost:3000/sensors');
 

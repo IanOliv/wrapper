@@ -13,8 +13,7 @@ import Mark from '@/components/Mark';
 import routes from '@/routes';
 import { Pages } from '@/routes/types';
 import { useWrapperSessionState } from '@/store/session';
-import { WrapperSession } from '@/store/session/types';
-import { doLogin } from '@/utils/micro/api';
+import { login } from '@/utils/auth/api';
 
 // The most ordinary screen, and the only one where the shell shows nothing but
 // itself — so the brand gets its one moment, then gets out of the way.
@@ -22,7 +21,7 @@ function Item() {
   const [wrapperSession, { addSession }] = useWrapperSessionState();
   const navigate = useNavigate();
 
-  const [login, setLogin] = useState({ username: '', password: '' });
+  const [loginForm, setLoginForm] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -32,13 +31,13 @@ function Item() {
   }, [wrapperSession.token, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLogin({ ...login, [e.target.name]: e.target.value });
+    setLoginForm({ ...loginForm, [e.target.name]: e.target.value });
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!login.username || !login.password) {
+    if (!loginForm.username || !loginForm.password) {
       setError('Please enter both username and password.');
       return;
     }
@@ -46,9 +45,15 @@ function Item() {
     setIsSubmitting(true);
 
     try {
-      // NOTE: `doLogin` still posts this as `email` — unchanged here on purpose.
-      const token = await doLogin(login.username, login.password);
-      addSession({ token } as WrapperSession);
+      const response = await login(loginForm.username, loginForm.password);
+      addSession({
+        token: response.token,
+        refreshToken: response.refresh_token,
+        expiresAt: Date.now() + response.expires_in * 1000,
+        user: response.user,
+        permissions: response.permissions,
+        profiles: response.profiles,
+      });
       setError('');
     } catch {
       setError('Invalid username or password.');
@@ -80,8 +85,8 @@ function Item() {
         <TextField
           id="username"
           name="username"
-          label="Username or email"
-          value={login.username}
+          label="Username"
+          value={loginForm.username}
           onChange={handleChange}
           autoComplete="username"
           size="small"
@@ -92,7 +97,7 @@ function Item() {
           name="password"
           type="password"
           label="Password"
-          value={login.password}
+          value={loginForm.password}
           onChange={handleChange}
           autoComplete="current-password"
           size="small"
