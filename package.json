@@ -7,22 +7,18 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "concurrently -n host,chat-remote -c blue,green \"npm:dev:host\" \"npm:dev:chat-remote\"",
+    "dev": "npm run dev --workspace=apps/host",
     "dev:host": "npm run dev --workspace=apps/host",
-    "dev:chat-remote": "npm run dev --workspace=apps/chat-remote",
-    "build": "npm run build --workspace=apps/chat-remote && npm run build --workspace=apps/host",
+    "build": "npm run build --workspace=apps/host",
     "build:host": "npm run build --workspace=apps/host",
-    "build:chat-remote": "npm run build --workspace=apps/chat-remote",
-    "preview": "concurrently -n host,chat-remote -c blue,green \"npm:preview:host\" \"npm:preview:chat-remote\"",
+    "preview": "npm run preview --workspace=apps/host",
     "preview:host": "npm run preview --workspace=apps/host",
-    "preview:chat-remote": "npm run preview --workspace=apps/chat-remote",
     "prepare": "husky install"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@typescript-eslint/eslint-plugin": "^5.38.0",
     "@typescript-eslint/parser": "^5.38.0",
-    "concurrently": "^9.1.0",
     "eslint": "^8.24.0",
     "eslint-plugin-react": "^7.31.8",
     "eslint-plugin-react-hooks": "^4.6.0",
