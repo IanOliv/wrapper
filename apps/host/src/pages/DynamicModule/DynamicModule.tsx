@@ -11,11 +11,11 @@ import { loadRemoteModule } from '@/remotes/registry';
 import useRemoteManifest from '@/store/remotes';
 import { useWrapperSessionState } from '@/store/session';
 
-// `session.profile` is never actually populated — Login only ever calls
-// `addSession({ token })` (see CLAUDE.md's known rough edges). Mocked here
-// only to demonstrate passing host state into a federated remote as a prop;
-// swap for the real `session.profile` once login sets one.
-const MOCK_PROFILE = { role: 'operator', tenant_name: 'Acme Plant 4' };
+// The wrapper-api auth worker has no tenant concept, only role-like `profiles`
+// (e.g. "Admin", "User") — tenantName has nothing real to come from, so it
+// stays a placeholder until the backend models one.
+const FALLBACK_ROLE = 'guest';
+const FALLBACK_TENANT_NAME = 'Acme Plant 4';
 
 // The one route every manifest entry resolves to (see src/remotes/toRoute.ts)
 // — :remoteId picks the entry, its own Suspense/ErrorBoundary keep one dead
@@ -38,17 +38,14 @@ function DynamicModule() {
     return <RemoteModuleErrorFallback error={new Error(`Unknown module: "${remoteId}"`)} />;
   }
 
-  const profile = session.profile ?? MOCK_PROFILE;
+  const role = session.profiles?.[0] ?? FALLBACK_ROLE;
 
   return (
     <>
       <Meta title={entry.nav.title} />
       <ErrorBoundary FallbackComponent={RemoteModuleErrorFallback} resetKeys={[entry.id]}>
         <Suspense fallback={<Loading />}>
-          <RemoteComponent
-            theme={theme}
-            userProfile={{ role: profile.role, tenantName: profile.tenant_name }}
-          />
+          <RemoteComponent theme={theme} userProfile={{ role, tenantName: FALLBACK_TENANT_NAME }} />
         </Suspense>
       </ErrorBoundary>
     </>
