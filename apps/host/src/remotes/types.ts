@@ -32,6 +32,11 @@ type RemoteManifest = {
 type HostRemoteProps = {
   theme?: Theme;
   userProfile?: { role: string; tenantName: string };
+  // The signed-in user's session token, so a remote can call its own backend
+  // on their behalf (e.g. chat_remote calling wrapper-api's ai worker for
+  // sessions/messages). Same rule as theme/userProfile: crosses the
+  // federation boundary as a plain prop, never through a shared store.
+  token?: string;
 };
 type HostRemoteComponentType = ComponentType<HostRemoteProps>;
 type HostRemoteModule = { default: HostRemoteComponentType };
