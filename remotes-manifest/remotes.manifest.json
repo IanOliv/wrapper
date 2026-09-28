@@ -12,7 +12,8 @@
         "icon": "ChatTeardropDots",
         "group": "modules",
         "description": "Conversations",
-        "aliases": ["messages", "talk", "dm"]
+        "aliases": ["messages", "talk", "dm"],
+        "requiredPermission": "ai:chat"
       }
     }
   ]

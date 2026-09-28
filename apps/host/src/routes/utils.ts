@@ -3,6 +3,7 @@ import { matchPath, useLocation } from 'react-router-dom';
 
 import { entryToRoute } from '@/remotes/toRoute';
 import useRemoteManifest from '@/store/remotes';
+import { hasPermission, useWrapperSessionState } from '@/store/session';
 
 import routes from '.';
 import { NavGroup, PathRouteCustomProps } from './types';
@@ -37,11 +38,25 @@ function isRouteActive(route: Route, pathname: string): boolean {
   return Boolean(matchPath({ path: route.path, end: false }, pathname));
 }
 
-/** Routes published by a federated remote's manifest — see src/remotes/. */
+/**
+ * Routes published by a federated remote's manifest — see src/remotes/. An
+ * entry naming a `nav.requiredPermission` the session doesn't have is left
+ * out entirely, not just hidden from nav — signed-out counts as lacking it.
+ */
 function useDynamicRoutes(): Route[] {
   const { entries } = useRemoteManifest();
+  const [session] = useWrapperSessionState();
 
-  return useMemo(() => entries.map(entryToRoute), [entries]);
+  return useMemo(
+    () =>
+      entries
+        .filter(
+          (entry) =>
+            !entry.nav.requiredPermission || hasPermission(session, entry.nav.requiredPermission),
+        )
+        .map(entryToRoute),
+    [entries, session],
+  );
 }
 
 /** `routesInGroup`, extended with whatever the remote manifest has published. */
