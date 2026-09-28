@@ -1,3 +1,5 @@
+import type { AuthPermission, AuthProfile } from '@/utils/auth/types';
+
 interface WrapperUser {
   id: string;
   username: string;
@@ -9,8 +11,8 @@ interface WrapperSession {
   refreshToken?: string;
   expiresAt?: number;
   user?: WrapperUser;
-  permissions?: string[];
-  profiles?: string[];
+  permissions?: AuthPermission[];
+  profiles?: AuthProfile[];
 }
 
 type Actions = {

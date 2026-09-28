@@ -115,7 +115,9 @@ function Item() {
 
       <Stack direction="row" spacing={1} sx={{ mt: 2, flexWrap: 'wrap', gap: 1 }}>
         {session.profiles?.length ? (
-          session.profiles.map((profile) => <Chip key={profile} label={profile} size="small" />)
+          session.profiles.map((profile) => (
+            <Chip key={profile.id} label={profile.name} size="small" />
+          ))
         ) : (
           <Chip label="No role assigned" size="small" variant="outlined" />
         )}
