@@ -45,7 +45,11 @@ function DynamicModule() {
       <Meta title={entry.nav.title} />
       <ErrorBoundary FallbackComponent={RemoteModuleErrorFallback} resetKeys={[entry.id]}>
         <Suspense fallback={<Loading />}>
-          <RemoteComponent theme={theme} userProfile={{ role, tenantName: FALLBACK_TENANT_NAME }} />
+          <RemoteComponent
+            theme={theme}
+            userProfile={{ role, tenantName: FALLBACK_TENANT_NAME }}
+            token={session.token}
+          />
         </Suspense>
       </ErrorBoundary>
     </>

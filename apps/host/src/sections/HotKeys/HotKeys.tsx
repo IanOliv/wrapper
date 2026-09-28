@@ -36,7 +36,9 @@ function HotKeys() {
   // is why this one is a plain listener rather than a `useHotkeys` binding.
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key.toLowerCase() !== 'k' || !(event.metaKey || event.ctrlKey)) return;
+      // `event.key` is missing on some synthetic keydown events (browser
+      // extensions, autofill, certain IME/mobile keyboards) — never assume a string.
+      if (event.key?.toLowerCase() !== 'k' || !(event.metaKey || event.ctrlKey)) return;
       if (isTypingTarget(event.target)) return;
 
       event.preventDefault();
