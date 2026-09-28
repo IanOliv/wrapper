@@ -31,6 +31,17 @@ function synchronizeWithLocalStorage({ setSelf, onSet }: AtomEffectParams) {
   });
 }
 
+// The login response's permissions are raw D1 rows ({resource, action,
+// profile}), not the flattened "resource:action" strings the JWT payload
+// itself carries — see utils/auth/types.ts. Nav gating checks this shape,
+// since it's what the session already holds.
+function hasPermission(session: WrapperSession, permission: string): boolean {
+  return (
+    session.permissions?.some((entry) => `${entry.resource}:${entry.action}` === permission) ??
+    false
+  );
+}
+
 function useWrapperSessionState(): [WrapperSession, Actions] {
   const [wrapperSession, setWSession] = useRecoilState(wrapperSessionState);
 
@@ -46,4 +57,4 @@ function useWrapperSessionState(): [WrapperSession, Actions] {
   return [wrapperSession, { addSession, clearSession }];
 }
 
-export { useWrapperSessionState };
+export { hasPermission, useWrapperSessionState };

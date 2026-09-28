@@ -17,6 +17,11 @@ type RemoteManifestEntry = {
     group: string;
     description?: string;
     aliases?: string[];
+    // "resource:action", checked against the signed-in user's session
+    // permissions (see store/session's hasPermission) — a remote requiring
+    // one stays out of the nav entirely for a user who doesn't have it,
+    // signed-out included. Absent entirely means no gate.
+    requiredPermission?: string;
   };
 };
 
