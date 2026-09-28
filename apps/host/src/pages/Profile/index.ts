@@ -1,3 +1,3 @@
-import Chat from './Chat';
+import Profile from './Profile';
 
-export default Chat;
+export default Profile;

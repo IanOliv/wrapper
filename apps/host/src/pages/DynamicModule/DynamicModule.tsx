@@ -38,7 +38,7 @@ function DynamicModule() {
     return <RemoteModuleErrorFallback error={new Error(`Unknown module: "${remoteId}"`)} />;
   }
 
-  const role = session.profiles?.[0] ?? FALLBACK_ROLE;
+  const role = session.profiles?.[0]?.name ?? FALLBACK_ROLE;
 
   return (
     <>

@@ -4,14 +4,29 @@ interface AuthUser {
   email: string | null;
 }
 
+// The `permissions`/`profiles` arrays on the login response are the raw D1
+// rows (see wrapper-api's getUserPermissions/getUserProfiles) — NOT the
+// flattened `"resource:action"` strings the JWT payload itself carries.
+interface AuthPermission {
+  resource: string;
+  action: string;
+  profile: string;
+}
+
+interface AuthProfile {
+  id: string;
+  name: string;
+  description: string | null;
+}
+
 interface LoginResponse {
   token: string;
   refresh_token: string;
   token_type: string;
   expires_in: number;
   user: AuthUser;
-  permissions: string[];
-  profiles: string[];
+  permissions: AuthPermission[];
+  profiles: AuthProfile[];
 }
 
 interface SignupInput {
@@ -44,6 +59,8 @@ interface ProfileResponse {
 }
 
 export type {
+  AuthPermission,
+  AuthProfile,
   AuthUser,
   LoginResponse,
   ProfileResponse,
